@@ -1,1 +1,14 @@
---- {}
+---
+profile_update_os::kernel_upgrade::update_day_of_week: []
+profile_update_os::kernel_upgrade::update_week_of_month: []
+profile_update_os::kernel_upgrade::update_month:
+  - "*"
+profile_update_os::kernel_upgrade::enabled: true
+profile_update_os::kernel_upgrade::nowait: false
+
+profile_update_os::yum_cron::exclude: "kernel grub2* shim* mokutil"
+profile_update_os::yum_cron::update_day_of_week: []
+profile_update_os::yum_cron::update_week_of_month: []
+profile_update_os::yum_cron::update_month:
+  - "*"
+profile_update_os::yum_cron::enabled: true

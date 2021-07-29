@@ -5,4 +5,8 @@
 # @example
 #   include profile_update_os
 class profile_update_os {
+
+  include profile_update_os::yum_cron
+  include profile_update_os::kernel_upgrade
+
 }

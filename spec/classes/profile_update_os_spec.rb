@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'profile_updates_os' do
+describe 'profile_update_os' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
       let(:facts) { os_facts }
