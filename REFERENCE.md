@@ -7,6 +7,7 @@
 ### Classes
 
 * [`profile_update_os`](#profile_update_os): configure functionality for upgrading OS packages
+* [`profile_update_os::common`](#profile_update_oscommon): Common functionality needed across the profile_update_os module
 * [`profile_update_os::kernel_upgrade`](#profile_update_oskernel_upgrade): Apply kernel updates via cron
 * [`profile_update_os::yum_cron`](#profile_update_osyum_cron): Apply yum updates via cron
 
@@ -29,6 +30,18 @@ configure functionality for upgrading OS packages
 include profile_update_os
 ```
 
+### <a name="profile_update_oscommon"></a>`profile_update_os::common`
+
+Common functionality needed across the profile_update_os module
+
+#### Examples
+
+##### 
+
+```puppet
+include profile_update_os::common
+```
+
 ### <a name="profile_update_oskernel_upgrade"></a>`profile_update_os::kernel_upgrade`
 
 Apply kernel updates via cron
@@ -48,6 +61,8 @@ The following parameters are available in the `profile_update_os::kernel_upgrade
 * [`enabled`](#enabled)
 * [`nowait`](#nowait)
 * [`update_day_of_week`](#update_day_of_week)
+* [`update_hour`](#update_hour)
+* [`update_minute`](#update_minute)
 * [`update_month`](#update_month)
 * [`update_week_of_month`](#update_week_of_month)
 
@@ -65,10 +80,27 @@ Boolean of whether to wait before applying kernel updates
 
 ##### <a name="update_day_of_week"></a>`update_day_of_week`
 
-Data type: `Array[String]`
+Data type: `String`
 
-Array of strings containing days of week for kernel update cron
-If not defined days are colculated from hostname
+String containing day of week abbreviation for kernel update cron
+e.g. "Sun", "Mon", "Tue", etc.
+If not defined day of week is calculated from hostname
+
+##### <a name="update_hour"></a>`update_hour`
+
+Data type: `Any`
+
+Hour for kernel update cron
+There is a random delay of up to 30 minutes before the kernel update occurs
+The random delay can be disabled by setting $nowait = true
+
+##### <a name="update_minute"></a>`update_minute`
+
+Data type: `Any`
+
+Minute for kernel update cron
+There is a random delay of up to 30 minutes before the kernel update occurs
+The random delay can be disabled by setting $nowait = true
 
 ##### <a name="update_month"></a>`update_month`
 
@@ -78,9 +110,9 @@ Array of strings containing months for kernel update cron
 
 ##### <a name="update_week_of_month"></a>`update_week_of_month`
 
-Data type: `Array[String]`
+Data type: `String`
 
-Array of strings containing week of the month for kernel update cron, e.g. "1"-"5"
+Strings containing week of the month for kernel update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
 ### <a name="profile_update_osyum_cron"></a>`profile_update_os::yum_cron`
@@ -102,6 +134,8 @@ The following parameters are available in the `profile_update_os::yum_cron` clas
 * [`enabled`](#enabled)
 * [`exclude`](#exclude)
 * [`update_day_of_week`](#update_day_of_week)
+* [`update_hour`](#update_hour)
+* [`update_minute`](#update_minute)
 * [`update_month`](#update_month)
 * [`update_week_of_month`](#update_week_of_month)
 
@@ -119,22 +153,37 @@ String of list of packages to exclude from yum updates
 
 ##### <a name="update_day_of_week"></a>`update_day_of_week`
 
-Data type: `Array[String]`
+Data type: `String`
 
-Array of strings containing days of week for yum cron
-If not defined days are colculated from hostname
+String containing day of week abbreviation for yum update cron
+e.g. "Sun", "Mon", "Tue", etc.
+If not defined day of week is calculated from hostname
+
+##### <a name="update_hour"></a>`update_hour`
+
+Data type: `Any`
+
+Hour for yum update cron
+There is a random delay of up to 30 minutes before the yum update occurs
+
+##### <a name="update_minute"></a>`update_minute`
+
+Data type: `Any`
+
+Minute for yum update cron
+There is a random delay of up to 30 minutes before the yum update occurs
 
 ##### <a name="update_month"></a>`update_month`
 
 Data type: `Array[String]`
 
-Array of strings containing months for yum cron
+Array of strings containing months for yum update cron
 
 ##### <a name="update_week_of_month"></a>`update_week_of_month`
 
-Data type: `Array[String]`
+Data type: `String`
 
-Array of strings containing week of the month for yum cron, e.g. "1"-"5"
+Strings containing week of the month for yum update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
 ## Functions
@@ -151,7 +200,7 @@ for more information on native puppet functions.
 See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
 for more information on native puppet functions.
 
-Returns: `Array`
+Returns: `String`
 
 ##### `hostname`
 
@@ -171,7 +220,7 @@ for more information on native puppet functions.
 See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
 for more information on native puppet functions.
 
-Returns: `Array`
+Returns: `String`
 
 ##### `hostname`
 

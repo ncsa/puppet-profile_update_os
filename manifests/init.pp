@@ -5,16 +5,8 @@
 class profile_update_os {
 
   ## IMPROVEMENT IDEAS
-  ## - MOVE DEFAULT DAY/WEEK LOGIC TO FUNCTION THAT CAN BE REFERENCED BY BOTH yum_cron & kernel_update
-  ##   SO SAME LOGIC IN A SINGLE PLACE
-  ##   - UPDATE TO CHECK FOR '-test' ANYWHERE IN HOSTNAME
-  ##   - HOSTS ENDING IN A NUMBER SHOULD RUN ON MOD 4 WEEK
-  ##   - MAP HOSTS ENDING IN '-a' OR DIGIT & CHARACTER TO MAP TO NUMBER WITH MOD 4 FOR THE WEEK
   ## - MOVE OS SPECIFIC IMPLEMENTATION TO HIERA OS DATA
   ##   - PACKAGES, SERVICE, COMMAND, COMMAND OPTIONS, ETC.
-  ## - CRON ENTRIES MIGHT BENEFIT FROM function OR defined type
-  ##   - ESPECIALLY TO SHARE THE CODE FOR CALCULATING HOW TO DO WEEK OF MONTH IN CRON
-  ## - SWITCH TO 'run-if-today' SCRIPT FOR CRONS
   ## - ADD WALL MESSAGE WARNINGS FOR X DAYS BEFORE REBOOT
   ## - ADD motd.d NOTICE WITH CALCULATED LANGUAGE (FOR kernel_update)
   ## - ADD EXCLUDE OPTIONS FOR
@@ -23,7 +15,8 @@ class profile_update_os {
   ##   - CONVERT EXCLUDES TO ARRAY
   ## - MERGE IN IMPROVEMENTS/FEATURES FROM lsst-pup MAINTENANCE CLASSES
 
-  include profile_update_os::yum_cron
+  include profile_update_os::common
   include profile_update_os::kernel_upgrade
+  include profile_update_os::yum_cron
 
 }

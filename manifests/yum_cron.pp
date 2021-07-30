@@ -7,14 +7,23 @@
 #   String of list of packages to exclude from yum updates
 #
 # @param update_day_of_week
-#   Array of strings containing days of week for yum cron
-#   If not defined days are colculated from hostname
+#   String containing day of week abbreviation for yum update cron
+#   e.g. "Sun", "Mon", "Tue", etc.
+#   If not defined day of week is calculated from hostname
+#
+# @param update_hour
+#   Hour for yum update cron
+#   There is a random delay of up to 30 minutes before the yum update occurs
+#
+# @param update_minute
+#   Minute for yum update cron
+#   There is a random delay of up to 30 minutes before the yum update occurs
 #
 # @param update_month
-#   Array of strings containing months for yum cron
+#   Array of strings containing months for yum update cron
 #
 # @param update_week_of_month
-#   Array of strings containing week of the month for yum cron, e.g. "1"-"5"
+#   Strings containing week of the month for yum update cron, e.g. "1"-"5" or "any"
 #   If not defined cron runs every week
 #
 # @example
@@ -22,9 +31,11 @@
 class profile_update_os::yum_cron (
   Boolean       $enabled,
   String        $exclude,
-  Array[String] $update_day_of_week,
+  String        $update_day_of_week,
+                $update_hour,
+                $update_minute,
   Array[String] $update_month,
-  Array[String] $update_week_of_month,
+  String        $update_week_of_month,
 ) {
 
   if $enabled
@@ -129,54 +140,33 @@ class profile_update_os::yum_cron (
       $yum_cron_command='( sleep $((RANDOM \% 30))m && /usr/bin/dnf-automatic )'
     }
 
+
     if ( ! empty($update_day_of_week) ) {
-      $weekday = $update_day_of_week
+      $day_of_week = $update_day_of_week
     }
     else
     {
-      case $facts['hostname'] {
-        /[13579]$/: { $weekday = 'wed'  }
-        /test$/:    { $weekday = 'odd'  }
-        default:    { $weekday = 'tue'  }
-      }
+      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
     }
-    case $update_week_of_month {
-      1, '1':       { $day_of_month = '1-7' }
-      2, '2':       { $day_of_month = '8-14' }
-      3, '3':       { $day_of_month = '15-21' }
-      4, '4':       { $day_of_month = '22-28' }
-      5, '5':       { $day_of_month = '29-31' }
-      default: { $day_of_month = '*' }
+    if ( ! empty($update_week_of_month) ) {
+      $week_num = $update_week_of_month
     }
+    else
+    {
+      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
+    }
+
     Cron {
       user     => 'root',
-      hour     => 5,
-      minute   => 0,
-      monthday => $day_of_month,
-      month    => $update_month,
     }
-    case $weekday {
-      'odd':   { $cron_day = [1,3,5] }
-      'even':  { $cron_day = [2,4] }
-      'tue':   {
-        $cron_day = '*'
-        $weekday_command = "( test \$(date +\\%w) = 2 ) &&"
-      }
-      'wed':   {
-        $cron_day = '*'
-        $weekday_command = "( test \$(date +\\%w) = 3 ) &&"
-      }
-      default: {
-        $cron_day = '*'
-        $weekday_command = "( test \$(date +\\%w) = ${weekday} ) &&"
-      }
+
+    cron { 'yum-cron':
+      command => "( /root/scripts/run-if-today.sh ${week_num} ${day_of_week} && ${yum_cron_command} )",
+      hour    => $update_hour,
+      minute  => $update_minute,
+      month   => $update_month,
     }
-    if $weekday != false {
-      cron { 'yum-cron':
-        command => "( ${weekday_command} yum clean all -q && ${yum_cron_command} )",
-        weekday => $cron_day,
-      }
-    }
+
   }
   else
   {
