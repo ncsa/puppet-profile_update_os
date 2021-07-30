@@ -5,7 +5,7 @@ function profile_update_os::calculate_week_of_month(String $hostname) >> String 
   case $hostname {
     /[159]$/:      { '1' }
     /[0-9][aei]$/: { '1' }
-    /\-aei]$/: { '1' }
+    /\-[aei]$/: { '1' }
     /[26]$/:       { '2' }
     /[0-9][bfj]$/: { '2' }
     /\-[bfj]$/: { '2' }

@@ -74,13 +74,80 @@ class profile_update_os::kernel_upgrade (
         File['/root/scripts/kernel_upgrade.sh'],
       ],
     }
+
+    ## UPDATE MOTD
+    ## CURRENTLY THIS ONLY DISPLAYS FOR RHEL >=8 SYSTEMS
+    case $week_num {
+      /1/:  {
+        $weeks = 'the 1st'
+        $month = ' of each month'
+      }
+      /2/:  {
+        $weeks = 'the 1st'
+        $month = ' of each month'
+      }
+      /3/:  {
+        $weeks = 'the 1st'
+        $month = ' of each month'
+      }
+      /4/:  {
+        $weeks = 'the 1st'
+        $month = ' of each month'
+      }
+      /5/:  {
+        $weeks = 'the 1st'
+        $month = ' of each month'
+      }
+      /any/: {
+        $weeks = 'all '
+        $month = 's of each month'
+      }
+      default: {
+        $weeks = 'unknown'
+        $month = ' of each month'
+      }
+    }
+    case $day_of_week {
+      /Sun/:  { $day = 'Sunday' }
+      /Mon/:  { $day = 'Monday' }
+      /Tue/:  { $day = 'Tuesday' }
+      /Wed/:  { $day = 'Wednesday' }
+      /Thu/:  { $day = 'Thursday' }
+      /Fri/:  { $day = 'Friday' }
+      /Sat/:  { $day = 'Saturday' }
+      default:  { $day = 'unknown' }
+    }
+    if ( $update_hour < 10 ) {
+      $hour = "0${update_hour}"
+    } else {
+      $hour = $update_hour
+    }
+    if ( $update_minute < 10 ) {
+      $minute = "0${update_minute}"
+    } else {
+      $minute = $update_minute
+    }
+    $motdcontent = @("EOF")
+      This system updates and reboots the ${weeks} ${day}${month} at ${hour}:${minute}.
+      | EOF
+    file { '/etc/motd.d':
+      ensure => 'directory',
+      mode   => '0755',
+    }
+    file { '/etc/motd.d/kernel_upgrade':
+      ensure  => file,
+      mode    => '0644',
+      content => $motdcontent,
+    }
   }
   else
   {
     cron { 'kernel_upgrade':
       ensure => absent,
     }
-
+    file { '/etc/motd.d/kernel_upgrade':
+      ensure => absent,
+    }
   }
 
   file { '/root/scripts/kernel_upgrade.sh':
@@ -91,19 +158,5 @@ class profile_update_os::kernel_upgrade (
     mode   => '0700',
     #require => File['/root/scripts'],
   }
-  ## /root/scripts ALREADY DEFINED IN ELSEWHERE?
-  #file { '/root/scripts':
-  #  ensure => 'directory',
-  #  owner  => 'root',
-  #  group  => 'root',
-  #  mode   => '0700',
-  #}
-
-#  cron { 'run_puppet_after_reboot':
-#    command => '( /usr/bin/sleep 10s; /opt/puppetlabs/bin/puppet agent -t )',
-#    user    => 'root',
-#    special => 'reboot',
-#    require => Package['puppet'],
-#  }
 
 }
