@@ -34,13 +34,22 @@ class profile_update_os::kernel_upgrade (
     }
     else
     {
-      case $facts['hostname'] {
-        /[13579]$/: { $weekday = 'wed'  }
-        /test$/:    { $weekday = 'odd'  }
-        default:    { $weekday = 'tue'  }
-      }
+      $weekday = profile_update_os::calculate_day_of_week($facts['hostname'])
+      #case $facts['hostname'] {
+      #  /[13579]$/: { $weekday = 'wed'  }
+      #  /test$/:    { $weekday = 'odd'  }
+      #  default:    { $weekday = 'tue'  }
+      #}
     }
-    case $update_week_of_month {
+    if ( ! empty($update_week_of_month) ) {
+      $monthweek = $update_week_of_month
+    }
+    else
+    {
+      $monthweek = profile_update_os::calculate_week_of_month($facts['hostname'])
+    }
+
+    case $monthweek {
       1, '1':       { $day_of_month = '1-7' }
       2, '2':       { $day_of_month = '8-14' }
       3, '3':       { $day_of_month = '15-21' }
@@ -58,8 +67,8 @@ class profile_update_os::kernel_upgrade (
     }
 
     case $weekday {
-      'odd': { $cron_day = [1,3,5] }
-      'even': { $cron_day = [2,4] }
+      #'odd': { $cron_day = [1,3,5] }
+      #'even': { $cron_day = [2,4] }
       'tue': {
         $cron_day = '*'
         $weekday_command = "( test \$(date +\\%w) = 2 ) &&"
@@ -94,11 +103,11 @@ class profile_update_os::kernel_upgrade (
   }
 
   file { '/root/scripts/kernel_upgrade.sh':
-    ensure  => 'file',
-    source  => "puppet:///modules/${module_name}/root/scripts/kernel_upgrade.sh",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0700',
+    ensure => 'file',
+    source => "puppet:///modules/${module_name}/root/scripts/kernel_upgrade.sh",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0700',
     #require => File['/root/scripts'],
   }
   ## /root/scripts ALREADY DEFINED IN ELSEWHERE?

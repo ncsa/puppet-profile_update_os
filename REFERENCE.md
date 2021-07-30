@@ -6,15 +6,20 @@
 
 ### Classes
 
-* [`profile_update_os`](#profile_update_os): A short summary of the purpose of this class
+* [`profile_update_os`](#profile_update_os): configure functionality for upgrading OS packages
 * [`profile_update_os::kernel_upgrade`](#profile_update_oskernel_upgrade): Apply kernel updates via cron
 * [`profile_update_os::yum_cron`](#profile_update_osyum_cron): Apply yum updates via cron
+
+### Functions
+
+* [`profile_update_os::calculate_day_of_week`](#profile_update_oscalculate_day_of_week): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
+* [`profile_update_os::calculate_week_of_month`](#profile_update_oscalculate_week_of_month): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
 
 ## Classes
 
 ### <a name="profile_update_os"></a>`profile_update_os`
 
-A description of what this class does
+configure functionality for upgrading OS packages
 
 #### Examples
 
@@ -131,4 +136,46 @@ Data type: `Array[String]`
 
 Array of strings containing week of the month for yum cron, e.g. "1"-"5"
 If not defined cron runs every week
+
+## Functions
+
+### <a name="profile_update_oscalculate_day_of_week"></a>`profile_update_os::calculate_day_of_week`
+
+Type: Puppet Language
+
+See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
+for more information on native puppet functions.
+
+#### `profile_update_os::calculate_day_of_week(String $hostname)`
+
+See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
+for more information on native puppet functions.
+
+Returns: `Array`
+
+##### `hostname`
+
+Data type: `String`
+
+
+
+### <a name="profile_update_oscalculate_week_of_month"></a>`profile_update_os::calculate_week_of_month`
+
+Type: Puppet Language
+
+See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
+for more information on native puppet functions.
+
+#### `profile_update_os::calculate_week_of_month(String $hostname)`
+
+See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
+for more information on native puppet functions.
+
+Returns: `Array`
+
+##### `hostname`
+
+Data type: `String`
+
+
 
