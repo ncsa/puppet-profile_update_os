@@ -1,0 +1,6 @@
+---
+profile_update_os::yum_upgrade::command: "/usr/bin/dnf-automatic"
+profile_update_os::yum_upgrade::config_file: "/etc/dnf/automatic.conf"
+profile_update_os::yum_upgrade::package: "dnf-automatic"
+profile_update_os::yum_upgrade::service: "dnf-automatic"
+profile_update_os::yum_upgrade::yum_config_file: "/etc/dnf/dnf.conf"

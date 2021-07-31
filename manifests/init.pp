@@ -1,21 +1,27 @@
 # @summary configure functionality for upgrading OS packages
+# 
+# @param root_cron_scripts_dir
+#   Directory where root cron scripts exist
 #
 # @example
 #   include profile_update_os
-class profile_update_os {
+class profile_update_os (
+  String $root_cron_scripts_dir,
+) {
 
-  ## IMPROVEMENT IDEAS
-  ## - MOVE OS SPECIFIC IMPLEMENTATION TO HIERA OS DATA
-  ##   - PACKAGES, SERVICE, COMMAND, COMMAND OPTIONS, ETC.
-  ## - ADD WALL MESSAGE WARNINGS FOR X DAYS BEFORE REBOOT
-  ## - ADD EXCLUDE OPTIONS FOR
-  ##   - PACKAGES TO IGNORE (ALREADY THERE FOR yum_cron)
-  ##   - REPOS TO IGNORE
-  ##   - CONVERT EXCLUDES TO ARRAY
-  ## - MERGE IN IMPROVEMENTS/FEATURES FROM lsst-pup MAINTENANCE CLASSES
-
-  include profile_update_os::common
   include profile_update_os::kernel_upgrade
-  include profile_update_os::yum_cron
+  include profile_update_os::yum_upgrade
+
+  file { $root_cron_scripts_dir:
+    ensure => 'directory',
+  }
+  file { 'run-if-today.sh':
+    ensure => 'file',
+    path   => "${root_cron_scripts_dir}/run-if-today.sh",
+    source => "puppet:///modules/${module_name}/root/cron_scripts/run-if-today.sh",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0700',
+  }
 
 }

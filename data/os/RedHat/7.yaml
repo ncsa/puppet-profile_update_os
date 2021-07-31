@@ -1,0 +1,6 @@
+---
+profile_update_os::yum_upgrade::command: "exec /usr/sbin/yum-cron"
+profile_update_os::yum_upgrade::config_file: "/etc/yum/yum-cron.conf"
+profile_update_os::yum_upgrade::package: "yum-cron"
+profile_update_os::yum_upgrade::service: "yum-cron"
+profile_update_os::yum_upgrade::yum_config_file: "/etc/yum.conf"

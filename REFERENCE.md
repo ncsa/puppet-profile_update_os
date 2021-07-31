@@ -7,9 +7,8 @@
 ### Classes
 
 * [`profile_update_os`](#profile_update_os): configure functionality for upgrading OS packages
-* [`profile_update_os::common`](#profile_update_oscommon): Common functionality needed across the profile_update_os module
 * [`profile_update_os::kernel_upgrade`](#profile_update_oskernel_upgrade): Apply kernel updates via cron
-* [`profile_update_os::yum_cron`](#profile_update_osyum_cron): Apply yum updates via cron
+* [`profile_update_os::yum_upgrade`](#profile_update_osyum_upgrade): Apply yum updates via cron
 
 ### Functions
 
@@ -30,17 +29,17 @@ configure functionality for upgrading OS packages
 include profile_update_os
 ```
 
-### <a name="profile_update_oscommon"></a>`profile_update_os::common`
+#### Parameters
 
-Common functionality needed across the profile_update_os module
+The following parameters are available in the `profile_update_os` class:
 
-#### Examples
+* [`root_cron_scripts_dir`](#root_cron_scripts_dir)
 
-##### 
+##### <a name="root_cron_scripts_dir"></a>`root_cron_scripts_dir`
 
-```puppet
-include profile_update_os::common
-```
+Data type: `String`
+
+Directory where root cron scripts exist
 
 ### <a name="profile_update_oskernel_upgrade"></a>`profile_update_os::kernel_upgrade`
 
@@ -59,63 +58,62 @@ include profile_update_os::kernel_upgrade
 The following parameters are available in the `profile_update_os::kernel_upgrade` class:
 
 * [`enabled`](#enabled)
-* [`nowait`](#nowait)
+* [`random_delay`](#random_delay)
 * [`update_day_of_week`](#update_day_of_week)
 * [`update_hour`](#update_hour)
 * [`update_minute`](#update_minute)
-* [`update_month`](#update_month)
+* [`update_months`](#update_months)
 * [`update_week_of_month`](#update_week_of_month)
 
 ##### <a name="enabled"></a>`enabled`
 
 Data type: `Boolean`
 
-Boolean of whether kernel updates via cron are enabled
+state of whether kernel updates via cron are enabled
 
-##### <a name="nowait"></a>`nowait`
+##### <a name="random_delay"></a>`random_delay`
 
-Data type: `Boolean`
+Data type: `Integer`
 
-Boolean of whether to wait before applying kernel updates
+Maximum number of minutes to random delay before applying kernel updates
 
 ##### <a name="update_day_of_week"></a>`update_day_of_week`
 
 Data type: `String`
 
-String containing day of week abbreviation for kernel update cron
+Contains day of week abbreviation for kernel update cron
 e.g. "Sun", "Mon", "Tue", etc.
 If not defined day of week is calculated from hostname
 
 ##### <a name="update_hour"></a>`update_hour`
 
-Data type: `Any`
+Data type: `Integer`
 
 Hour for kernel update cron
-There is a random delay of up to 30 minutes before the kernel update occurs
-The random delay can be disabled by setting $nowait = true
+There is a random delay before the kernel update occurs
 
 ##### <a name="update_minute"></a>`update_minute`
 
-Data type: `Any`
+Data type: `Integer`
 
 Minute for kernel update cron
-There is a random delay of up to 30 minutes before the kernel update occurs
-The random delay can be disabled by setting $nowait = true
+There is a random delay before the kernel update occurs
 
-##### <a name="update_month"></a>`update_month`
+##### <a name="update_months"></a>`update_months`
 
 Data type: `Array[String]`
 
-Array of strings containing months for kernel update cron
+Names of months (as 3 letter abbreviations) for kernel update cron
+Empty array implies to run every month
 
 ##### <a name="update_week_of_month"></a>`update_week_of_month`
 
 Data type: `String`
 
-Strings containing week of the month for kernel update cron, e.g. "1"-"5" or "any"
+Week of the month for kernel update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
-### <a name="profile_update_osyum_cron"></a>`profile_update_os::yum_cron`
+### <a name="profile_update_osyum_upgrade"></a>`profile_update_os::yum_upgrade`
 
 Apply yum updates via cron
 
@@ -124,67 +122,117 @@ Apply yum updates via cron
 ##### 
 
 ```puppet
-include profile_update_os::yum_cron
+include profile_update_os::yum_upgrade
 ```
 
 #### Parameters
 
-The following parameters are available in the `profile_update_os::yum_cron` class:
+The following parameters are available in the `profile_update_os::yum_upgrade` class:
 
+* [`command`](#command)
+* [`config_file`](#config_file)
 * [`enabled`](#enabled)
-* [`exclude`](#exclude)
+* [`excluded_packages`](#excluded_packages)
+* [`installonly_limit`](#installonly_limit)
+* [`random_delay`](#random_delay)
+* [`package`](#package)
+* [`service`](#service)
 * [`update_day_of_week`](#update_day_of_week)
 * [`update_hour`](#update_hour)
 * [`update_minute`](#update_minute)
-* [`update_month`](#update_month)
+* [`update_months`](#update_months)
 * [`update_week_of_month`](#update_week_of_month)
+* [`yum_config_file`](#yum_config_file)
+
+##### <a name="command"></a>`command`
+
+Data type: `String`
+
+Command to apply yum updates for the OS version
+
+##### <a name="config_file"></a>`config_file`
+
+Data type: `String`
+
+Full path to yum update config file for the OS version
 
 ##### <a name="enabled"></a>`enabled`
 
 Data type: `Boolean`
 
-Boolean of whether yum updates via cron are enabled
+State of whether yum updates via cron are enabled
 
-##### <a name="exclude"></a>`exclude`
+##### <a name="excluded_packages"></a>`excluded_packages`
+
+Data type: `Array`
+
+List of packages to exclude from yum updates
+
+##### <a name="installonly_limit"></a>`installonly_limit`
+
+Data type: `Integer`
+
+Maximum number of versions that can be installed simultaneously for any single package
+
+##### <a name="random_delay"></a>`random_delay`
+
+Data type: `Integer`
+
+Maximum number of minutes to randomly wait before applying yum updates
+
+##### <a name="package"></a>`package`
 
 Data type: `String`
 
-String of list of packages to exclude from yum updates
+Package name for the yum update package for the OS version
+
+##### <a name="service"></a>`service`
+
+Data type: `String`
+
+Service name for the yum update service for the OS version
 
 ##### <a name="update_day_of_week"></a>`update_day_of_week`
 
 Data type: `String`
 
-String containing day of week abbreviation for yum update cron
+Day of week abbreviation for yum update cron
 e.g. "Sun", "Mon", "Tue", etc.
 If not defined day of week is calculated from hostname
 
 ##### <a name="update_hour"></a>`update_hour`
 
-Data type: `Any`
+Data type: `Integer`
 
 Hour for yum update cron
 There is a random delay of up to 30 minutes before the yum update occurs
 
 ##### <a name="update_minute"></a>`update_minute`
 
-Data type: `Any`
+Data type: `Integer`
 
 Minute for yum update cron
 There is a random delay of up to 30 minutes before the yum update occurs
 
-##### <a name="update_month"></a>`update_month`
+##### <a name="update_months"></a>`update_months`
 
 Data type: `Array[String]`
 
-Array of strings containing months for yum update cron
+Names of months (as 3 letter abbreviations) for kernel update cron
+Empty array implies to run every month
 
 ##### <a name="update_week_of_month"></a>`update_week_of_month`
 
 Data type: `String`
 
-Strings containing week of the month for yum update cron, e.g. "1"-"5" or "any"
+Week of the month for yum update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
+
+##### <a name="yum_config_file"></a>`yum_config_file`
+
+Data type: `String`
+
+Full path to yum config file for the OS version
 
 ## Functions
 
