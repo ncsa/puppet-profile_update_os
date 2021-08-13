@@ -83,7 +83,7 @@ fi
 
 # SHUTDOWN NOTICE
 #echo $SHUTDOWN_MESSAGE
-/sbin/shutdown -k +$((WAITTIME)) $SHUTDOWN_MESSAGE
+/sbin/shutdown -k +$((WAITTIME)) "$SHUTDOWN_MESSAGE"
 
 # SLEEP 0 OR MORE MINUTES
 #echo "Waiting for $WAITTIME minutes before applying updates"

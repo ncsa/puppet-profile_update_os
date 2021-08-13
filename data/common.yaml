@@ -1,18 +1,21 @@
 ---
+profile_update_os::root_cron_scripts_dir: "/root/cron_scripts"
+
 profile_update_os::kernel_upgrade::enabled: true
-profile_update_os::kernel_upgrade::nowait: false
+profile_update_os::kernel_upgrade::random_delay: 30
 profile_update_os::kernel_upgrade::update_day_of_week: ""
 profile_update_os::kernel_upgrade::update_hour: 6
 profile_update_os::kernel_upgrade::update_minute: 0
-profile_update_os::kernel_upgrade::update_month:
-  - "*"
+profile_update_os::kernel_upgrade::update_months: []
 profile_update_os::kernel_upgrade::update_week_of_month: ""
 
-profile_update_os::yum_cron::enabled: true
-profile_update_os::yum_cron::exclude: "kernel grub2* shim* mokutil"
-profile_update_os::yum_cron::update_day_of_week: ""
-profile_update_os::yum_cron::update_hour: 5
-profile_update_os::yum_cron::update_minute: 0
-profile_update_os::yum_cron::update_month:
-  - "*"
-profile_update_os::yum_cron::update_week_of_month: ""
+profile_update_os::yum_upgrade::enabled: true
+profile_update_os::yum_upgrade::excluded_packages:
+  - "kernel"
+profile_update_os::yum_upgrade::installonly_limit: 2
+profile_update_os::yum_upgrade::random_delay: 30
+profile_update_os::yum_upgrade::update_day_of_week: ""
+profile_update_os::yum_upgrade::update_hour: 5
+profile_update_os::yum_upgrade::update_minute: 0
+profile_update_os::yum_upgrade::update_months: []
+profile_update_os::yum_upgrade::update_week_of_month: ""

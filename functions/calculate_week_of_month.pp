@@ -15,7 +15,9 @@ function profile_update_os::calculate_week_of_month(String $hostname) >> String 
     /[048]$/:      { '4' }
     /[0-9][dhl]$/: { '4' }
     /\-[dhl]$/: { '4' }
-    default:       { 'any' }
+    # THE DEFAULT NEEDS TO BE UPDATED TO SPREAD HOSTS OUT THROUGHOUT THE MONTH
+    # CURRENT THINKING ON '2' IS TO KEEP THEM AWAY FROM MOST HOLIDAYS
+    default:       { '2' }
   }
 
 }

@@ -1,42 +1,41 @@
 # @summary Apply kernel updates via cron
 #
 # @param enabled
-#   Boolean of whether kernel updates via cron are enabled
+#   state of whether kernel updates via cron are enabled
 #
-# @param nowait
-#   Boolean of whether to wait before applying kernel updates
+# @param random_delay
+#   Maximum number of minutes to random delay before applying kernel updates
 #
 # @param update_day_of_week
-#   String containing day of week abbreviation for kernel update cron
+#   Contains day of week abbreviation for kernel update cron
 #   e.g. "Sun", "Mon", "Tue", etc.
 #   If not defined day of week is calculated from hostname
 #
 # @param update_hour
 #   Hour for kernel update cron
-#   There is a random delay of up to 30 minutes before the kernel update occurs
-#   The random delay can be disabled by setting $nowait = true
+#   There is a random delay before the kernel update occurs
 #
 # @param update_minute
 #   Minute for kernel update cron
-#   There is a random delay of up to 30 minutes before the kernel update occurs
-#   The random delay can be disabled by setting $nowait = true
+#   There is a random delay before the kernel update occurs
 #
-# @param update_month
-#   Array of strings containing months for kernel update cron
+# @param update_months
+#   Names of months (as 3 letter abbreviations) for kernel update cron
+#   Empty array implies to run every month
 #
 # @param update_week_of_month
-#   Strings containing week of the month for kernel update cron, e.g. "1"-"5" or "any"
+#   Week of the month for kernel update cron, e.g. "1"-"5" or "any"
 #   If not defined cron runs every week
 #
 # @example
 #   include profile_update_os::kernel_upgrade
 class profile_update_os::kernel_upgrade (
   Boolean       $enabled,
-  Boolean       $nowait,
+  Integer       $random_delay,
   String        $update_day_of_week,
-                $update_hour,
-                $update_minute,
-  Array[String] $update_month,
+  Integer       $update_hour,
+  Integer       $update_minute,
+  Array[String] $update_months,
   String        $update_week_of_month,
 ) {
 
@@ -57,22 +56,55 @@ class profile_update_os::kernel_upgrade (
       $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
     }
 
-    if $nowait {
-      $script_options='-n'
+    if ( empty($update_months) ) {
+      $cron_update_months = '*'
+      $motd_months = 'each month'
+    } else {
+      $cron_update_months = $update_months
+      $months_3char_abr = $update_months.map |$m| { $m[0,3] }
+      $motd_months = join( capitalize( $months_3char_abr ), '/' )
     }
-    else
-    {
+
+    if ( $random_delay > 5 ) {
+      $script_options="--waitmax ${random_delay}"
+    } elsif ( $random_delay <= 5 ) {
+      $script_options="--waitmin 0 --waitmax ${random_delay}"
+    } else {
       $script_options=''
     }
 
     cron { 'kernel_upgrade':
-      command => "( /root/scripts/run-if-today.sh ${week_num} ${day_of_week} && /root/scripts/kernel_upgrade.sh ${script_options} )",
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
+&& ${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh ${script_options} )",
       hour    => $update_hour,
       minute  => $update_minute,
-      month   => $update_month,
+      month   => $cron_update_months,
       require => [
-        File['/root/scripts/kernel_upgrade.sh'],
+        File['kernel_upgrade.sh'],
       ],
+    }
+    $notice_of_upgrade_text = "This server (${::fqdn}) will be updated and rebooted in"
+    cron { '48_hour_notice_of_upgrade':
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 2 \
+&& /usr/bin/wall '${notice_of_upgrade_text} 48 hours.' )",
+      hour    => $update_hour,
+      minute  => $update_minute,
+      month   => $cron_update_months,
+    }
+    cron { '24_hour_notice_of_upgrade':
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 1 \
+&& /usr/bin/wall '${notice_of_upgrade_text} 24 hours.' )",
+      hour    => $update_hour,
+      minute  => $update_minute,
+      month   => $cron_update_months,
+    }
+    $update_one_hour_earlier = $update_hour - 1
+    cron { '1_hour_notice_of_upgrade':
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
+&& /usr/bin/wall '${notice_of_upgrade_text} 1 hour.' )",
+      hour    => $update_one_hour_earlier,
+      minute  => $update_minute,
+      month   => $cron_update_months,
     }
 
     ## UPDATE MOTD
@@ -80,31 +112,31 @@ class profile_update_os::kernel_upgrade (
     case $week_num {
       /1/:  {
         $weeks = 'the 1st'
-        $month = ' of each month'
+        $month_prefix = ' of'
       }
       /2/:  {
-        $weeks = 'the 1st'
-        $month = ' of each month'
+        $weeks = 'the 2nd'
+        $month_prefix = ' of'
       }
       /3/:  {
-        $weeks = 'the 1st'
-        $month = ' of each month'
+        $weeks = 'the 3rd'
+        $month_prefix = ' of'
       }
       /4/:  {
-        $weeks = 'the 1st'
-        $month = ' of each month'
+        $weeks = 'the 4th'
+        $month_prefix = ' of'
       }
       /5/:  {
-        $weeks = 'the 1st'
-        $month = ' of each month'
+        $weeks = 'the 5th'
+        $month_prefix = ' of'
       }
       /any/: {
-        $weeks = 'all '
-        $month = 's of each month'
+        $weeks = 'all'
+        $month_prefix = 's of'
       }
       default: {
         $weeks = 'unknown'
-        $month = ' of each month'
+        $month_prefix = ' of'
       }
     }
     case $day_of_week {
@@ -127,8 +159,9 @@ class profile_update_os::kernel_upgrade (
     } else {
       $minute = $update_minute
     }
+
     $motdcontent = @("EOF")
-      This system updates and reboots the ${weeks} ${day}${month} at ${hour}:${minute}.
+      This system updates and reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${::timezone}.
       | EOF
     file { '/etc/motd.d':
       ensure => 'directory',
@@ -139,24 +172,39 @@ class profile_update_os::kernel_upgrade (
       mode    => '0644',
       content => $motdcontent,
     }
+
+    file { 'kernel_upgrade.sh':
+      ensure => 'file',
+      path   => "${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh",
+      source => "puppet:///modules/${module_name}/root/cron_scripts/kernel_upgrade.sh",
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0700',
+    }
+
   }
   else
   {
     cron { 'kernel_upgrade':
       ensure => absent,
     }
+    cron { '48_hour_notice_of_upgrade':
+      ensure => absent,
+    }
+    cron { '24_hour_notice_of_upgrade':
+      ensure => absent,
+    }
+    cron { '1_hour_notice_of_upgrade':
+      ensure => absent,
+    }
     file { '/etc/motd.d/kernel_upgrade':
       ensure => absent,
     }
-  }
+    file { 'kernel_upgrade.sh':
+      ensure => absent,
+      path   => "${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh",
+    }
 
-  file { '/root/scripts/kernel_upgrade.sh':
-    ensure => 'file',
-    source => "puppet:///modules/${module_name}/root/scripts/kernel_upgrade.sh",
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0700',
-    #require => File['/root/scripts'],
   }
 
 }
