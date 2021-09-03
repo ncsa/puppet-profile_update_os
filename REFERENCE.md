@@ -133,7 +133,6 @@ The following parameters are available in the `profile_update_os::yum_upgrade` c
 * [`config_file`](#config_file)
 * [`enabled`](#enabled)
 * [`excluded_packages`](#excluded_packages)
-* [`installonly_limit`](#installonly_limit)
 * [`random_delay`](#random_delay)
 * [`package`](#package)
 * [`service`](#service)
@@ -142,7 +141,6 @@ The following parameters are available in the `profile_update_os::yum_upgrade` c
 * [`update_minute`](#update_minute)
 * [`update_months`](#update_months)
 * [`update_week_of_month`](#update_week_of_month)
-* [`yum_config_file`](#yum_config_file)
 
 ##### <a name="command"></a>`command`
 
@@ -167,12 +165,6 @@ State of whether yum updates via cron are enabled
 Data type: `Array`
 
 List of packages to exclude from yum updates
-
-##### <a name="installonly_limit"></a>`installonly_limit`
-
-Data type: `Integer`
-
-Maximum number of versions that can be installed simultaneously for any single package
 
 ##### <a name="random_delay"></a>`random_delay`
 
@@ -227,12 +219,6 @@ Data type: `String`
 
 Week of the month for yum update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
-
-##### <a name="yum_config_file"></a>`yum_config_file`
-
-Data type: `String`
-
-Full path to yum config file for the OS version
 
 ## Functions
 

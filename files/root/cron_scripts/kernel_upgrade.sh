@@ -5,7 +5,7 @@
 DEF_SHUTDOWN_MESSAGE="This server ($(hostname)) WILL be rebooted for a scheduled kernel upgrade. Please log out now."
 DEF_NUM_UPDATES_TODAY=5
 DEF_UPDATES_SINCE_REBOOT=10
-DEF_PKGS_REQ_REBOOT="kernel|dkms|zfs|dkms|lib"
+DEF_PKGS_REQ_REBOOT="kernel|dkms|lustre|zfs|lib"
 DEF_WAITMAX=30
 DEF_WAITMIN=5
 
@@ -83,20 +83,17 @@ fi
 
 # SHUTDOWN NOTICE
 #echo $SHUTDOWN_MESSAGE
-/sbin/shutdown -k +$((WAITTIME)) "$SHUTDOWN_MESSAGE"
+wall "$SHUTDOWN_MESSAGE"
 
 # SLEEP 0 OR MORE MINUTES
 #echo "Waiting for $WAITTIME minutes before applying updates"
 sleep $((WAITTIME))m
 
-# SHOULD WE KICK USERS OFF FORCEFULLY ?
-#  - WOULD MAKE IT IMPOSSIBLE TO RUN THIS SCRIPT INTERACTIVELY
+wall "$SHUTDOWN_MESSAGE"
+/sbin/shutdown -k now "$SHUTDOWN_MESSAGE"
 
 # KERNEL UPDATE
 /usr/bin/yum -y update --disableexcludes=all kernel 'kernel*'
-
-# SHOULD WE ATTEMPT TO REBUILD ANY DKMS PACKAGES ?
-#  - NOT AT THIS TIME
 
 # REBOOT IF NECESSARY
 LASTREBOOTDATE=`last reboot | head -1 | awk '{ print $5  " "  $6  " "  $7 }'`
@@ -105,7 +102,7 @@ TODAYDATE=`date +"%d %b %Y"`
 PKG_UPDATES_REQ_REBOOT=`rpm -qa --last | grep -B1000 "$LASTBOOTDATE" | grep -v "$LASTBOOTDATE" | egrep -i "$PKGS_REQ_REBOOT" |  wc -l`
 PKG_UPDATES=`rpm -qa --last | grep -B1000 "$LASTBOOTDATE" | grep -v "$LASTBOOTDATE" | wc -l`
 PKG_UPDATES_TODAY=`rpm -qa --last | grep -B1000 "$TODAYDATE" | wc -l`
-KERNEL_UPDATES_TODAY=`rpm -qa --last | grep -B1000 "$TODAYDATE" | grep -i 'kernel' | wc -l`
+KERNEL_UPDATES_TODAY=`rpm -qa --last | grep -B1000 "$TODAYDATE" | egrep -i 'kernel-[0-9]' | wc -l`
 #echo "Last reboot: $LASTBOOTDATE"
 #echo "Today's date: $TODAYDATE"
 #echo "Package updates requiring reboot since last reboot: $PKG_UPDATES_REQ_REBOOT"
@@ -118,8 +115,16 @@ if  [[ $PKG_UPDATES_REQ_REBOOT -gt 0  ]] ||
 	[[ $((KERNEL_UPDATES_TODAY)) -gt 1 ]] ||
 	[[ $((REBOOT)) -ge 1 ]] ; then
 	echo "REBOOTING SERVER..."
-        logger -s -t "puppet-debug" $SHUTDOWN_MESSAGE
+	logger -s -t "puppet-debug" $SHUTDOWN_MESSAGE
 #	echo $SHUTDOWN_MESSAGE
-	/sbin/shutdown -r now $SHUTDOWN_MESSAGE
+	wall "$SHUTDOWN_MESSAGE"
+	/sbin/shutdown -r now "$SHUTDOWN_MESSAGE"
+else
+	echo "SKIPPING SERVER REBOOT..."
+	NO_SHUTDOWN_MESSAGE="No updates require reboot of this server ($(hostname -f)). Cancelling reboot."
+	logger -s -t "puppet-debug" "$NO_SHUTDOWN_MESSAGE"
+#	echo $NO_SHUTDOWN_MESSAGE
+        /sbin/shutdown -c
+	wall "$NO_SHUTDOWN_MESSAGE"
 fi
 

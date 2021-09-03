@@ -41,22 +41,18 @@ class profile_update_os::kernel_upgrade (
 
   if $enabled {
 
-    if ( ! empty($update_day_of_week) ) {
+    if empty($update_day_of_week) {
+      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
+    } else {
       $day_of_week = $update_day_of_week
     }
-    else
-    {
-      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
-    }
-    if ( ! empty($update_week_of_month) ) {
+    if empty($update_week_of_month) {
+      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
+    } else {
       $week_num = $update_week_of_month
     }
-    else
-    {
-      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
-    }
 
-    if ( empty($update_months) ) {
+    if empty($update_months) {
       $cron_update_months = '*'
       $motd_months = 'each month'
     } else {

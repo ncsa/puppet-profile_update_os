@@ -12,9 +12,6 @@
 # @param excluded_packages
 #   List of packages to exclude from yum updates
 #
-# @param installonly_limit
-#   Maximum number of versions that can be installed simultaneously for any single package
-#
 # @param random_delay
 #   Maximum number of minutes to randomly wait before applying yum updates
 #
@@ -55,7 +52,6 @@ class profile_update_os::yum_upgrade (
   String        $config_file,
   Boolean       $enabled,
   Array         $excluded_packages,
-  Integer       $installonly_limit,
   String        $package,
   Integer       $random_delay,
   String        $service,
@@ -79,21 +75,17 @@ class profile_update_os::yum_upgrade (
       notify   => Service[$service],
     }
 
-    file_line { 'yum_config_installonly_limit':
-      path  => $yum_config_file,
-      line  => "installonly_limit=${installonly_limit}",
-      match => '^installonly_limit*',
-    }
-
+    # PERHAPS SHOULD BE MOVED TO A DIFFERENT PROFILE CLASS
+    # IS HERE TO MAKE SURE KERNEL PACKAGE EXCLUDED BY DEFAULT
     if $excluded_packages {
-      $exclude = join($excluded_packages, ' ')
-    } else {
-      $exclude = ''
-    }
-    file_line { 'yum_config_exclude':
-      path  => $yum_config_file,
-      line  => "exclude=${exclude}",
-      match => '^exclude*',
+      $excludes = join($excluded_packages, ' ')
+#      include ::yum
+#      yum::config { 'exclude': ensure => $excludes, }
+      file_line { 'yum_config_exclude':
+        path  => $yum_config_file,
+        line  => "exclude=${excludes}",
+        match => '^exclude*',
+      }
     }
 
     file_line { 'yum_update_config_apply_updates':
@@ -116,23 +108,18 @@ class profile_update_os::yum_upgrade (
       require    => Package[$package],
     }
 
-
-    if ( ! empty($update_day_of_week) ) {
+    if empty($update_day_of_week) {
+      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
+    } else {
       $day_of_week = $update_day_of_week
     }
-    else
-    {
-      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
-    }
-    if ( ! empty($update_week_of_month) ) {
+    if empty($update_week_of_month) {
+      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
+    } else {
       $week_num = $update_week_of_month
     }
-    else
-    {
-      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
-    }
 
-    if ( empty($update_months) ) {
+    if empty($update_months) {
       $cron_update_months = '*'
     } else {
       $cron_update_months = $update_months
