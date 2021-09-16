@@ -141,6 +141,7 @@ The following parameters are available in the `profile_update_os::yum_upgrade` c
 * [`update_minute`](#update_minute)
 * [`update_months`](#update_months)
 * [`update_week_of_month`](#update_week_of_month)
+* [`yum_config_file`](#yum_config_file)
 
 ##### <a name="command"></a>`command`
 
@@ -219,6 +220,12 @@ Data type: `String`
 
 Week of the month for yum update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
+
+##### <a name="yum_config_file"></a>`yum_config_file`
+
+Data type: `String`
+
+Full path to yum config file for the OS version
 
 ## Functions
 

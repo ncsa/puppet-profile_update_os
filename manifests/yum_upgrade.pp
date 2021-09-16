@@ -77,7 +77,15 @@ class profile_update_os::yum_upgrade (
 
     # PERHAPS SHOULD BE MOVED TO A DIFFERENT PROFILE CLASS
     # IS HERE TO MAKE SURE KERNEL PACKAGE EXCLUDED BY DEFAULT
-    if $excluded_packages {
+    if empty($excluded_packages) {
+      file_line { 'yum_config_exclude':
+        ensure            => 'absent',
+        #line              => 'exclude',
+        path              => $yum_config_file,
+        match             => '^exclude*',
+        match_for_absence => true,
+      }
+    } else {
       $excludes = join($excluded_packages, ' ')
 #      include ::yum
 #      yum::config { 'exclude': ensure => $excludes, }
