@@ -141,13 +141,17 @@ class profile_update_os::yum_upgrade (
     }
     $wait_command = "sleep \$((RANDOM \\% ${max_wait_time}))m"
 
-    cron { 'yum_upgrade':
-      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
-&& ${wait_command} && ${command} )",
+    Cron {
       hour    => $update_hour,
       minute  => $update_minute,
       month   => $cron_update_months,
       user    => 'root',
+      weekday => '*',
+    }
+
+    cron { 'yum_upgrade':
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
+&& ${wait_command} && ${command} )",
     }
     # ENSURE OLD NAME OF CRON NO LONGER EXISTS - CAN BE REMOVED IN FUTURE AFTER SURE CLEANED UP
     cron { 'yum-cron':
