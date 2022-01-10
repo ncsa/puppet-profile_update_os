@@ -2,9 +2,9 @@
 
 # Example of CRONs using this script:
 # 26 8 * * * /root/scripts/run-if-today.sh 1 Wed && /usr/local/sbin/update_and_reboot --quiet
-# 26 8 * * * /root/scripts/run-if-today.sh 1 Wed 2 && /usr/bin/wall 'This system will be updated and rebooted in 48 hours.'
-# 26 8 * * * /root/scripts/run-if-today.sh 1 Wed 1 && /usr/bin/wall 'This system will be updated and rebooted in 24 hours.'
-# 26 7 * * * /root/scripts/run-if-today.sh 1 Wed && /usr/bin/wall 'This system will be updated and rebooted in 1 hour.'
+# 26 8 * * * /root/scripts/run-if-today.sh 1 Wed 2 && /usr/bin/wall -n 'This system will be updated and rebooted in 48 hours.'
+# 26 8 * * * /root/scripts/run-if-today.sh 1 Wed 1 && /usr/bin/wall -n 'This system will be updated and rebooted in 24 hours.'
+# 26 7 * * * /root/scripts/run-if-today.sh 1 Wed && /usr/bin/wall -n 'This system will be updated and rebooted in 1 hour.'
 
 # print a help message if we dont get 2 or 3 args
 if [[ "$#" -ne "2" ]] && [[ "$#" -ne "3" ]]; then

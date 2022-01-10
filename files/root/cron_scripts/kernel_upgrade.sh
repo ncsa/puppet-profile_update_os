@@ -83,13 +83,13 @@ fi
 
 # SHUTDOWN NOTICE
 #echo $SHUTDOWN_MESSAGE
-wall "$SHUTDOWN_MESSAGE"
+wall -n "$SHUTDOWN_MESSAGE"
 
 # SLEEP 0 OR MORE MINUTES
 #echo "Waiting for $WAITTIME minutes before applying updates"
 sleep $((WAITTIME))m
 
-wall "$SHUTDOWN_MESSAGE"
+wall -n "$SHUTDOWN_MESSAGE"
 /sbin/shutdown -k now "$SHUTDOWN_MESSAGE"
 
 # KERNEL UPDATE
@@ -117,7 +117,7 @@ if  [[ $PKG_UPDATES_REQ_REBOOT -gt 0  ]] ||
 	echo "REBOOTING SERVER..."
 	logger -s -t "puppet-debug" $SHUTDOWN_MESSAGE
 #	echo $SHUTDOWN_MESSAGE
-	wall "$SHUTDOWN_MESSAGE"
+	wall -n "$SHUTDOWN_MESSAGE"
 	/sbin/shutdown -r now "$SHUTDOWN_MESSAGE"
 else
 	echo "SKIPPING SERVER REBOOT..."
@@ -125,6 +125,6 @@ else
 	logger -s -t "puppet-debug" "$NO_SHUTDOWN_MESSAGE"
 #	echo $NO_SHUTDOWN_MESSAGE
         /sbin/shutdown -c
-	wall "$NO_SHUTDOWN_MESSAGE"
+	wall -n "$NO_SHUTDOWN_MESSAGE"
 fi
 

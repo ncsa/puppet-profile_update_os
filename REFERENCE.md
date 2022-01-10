@@ -8,6 +8,7 @@
 
 * [`profile_update_os`](#profile_update_os): configure functionality for upgrading OS packages
 * [`profile_update_os::kernel_upgrade`](#profile_update_oskernel_upgrade): Apply kernel updates via cron
+* [`profile_update_os::scheduled_reboot`](#profile_update_osscheduled_reboot): Reboot node at scheduled time via cron
 * [`profile_update_os::yum_upgrade`](#profile_update_osyum_upgrade): Apply yum updates via cron
 
 ### Functions
@@ -111,6 +112,75 @@ Empty array implies to run every month
 Data type: `String`
 
 Week of the month for kernel update cron, e.g. "1"-"5" or "any"
+If not defined cron runs every week
+
+### <a name="profile_update_osscheduled_reboot"></a>`profile_update_os::scheduled_reboot`
+
+Reboot node at scheduled time via cron
+
+#### Examples
+
+##### 
+
+```puppet
+include profile_update_os::scheduled_reboot
+```
+
+#### Parameters
+
+The following parameters are available in the `profile_update_os::scheduled_reboot` class:
+
+* [`command`](#command)
+* [`enabled`](#enabled)
+* [`reboot_day_of_week`](#reboot_day_of_week)
+* [`reboot_hour`](#reboot_hour)
+* [`reboot_minute`](#reboot_minute)
+* [`reboot_months`](#reboot_months)
+* [`reboot_week_of_month`](#reboot_week_of_month)
+
+##### <a name="command"></a>`command`
+
+Data type: `String`
+
+Command to handle the reboot
+
+##### <a name="enabled"></a>`enabled`
+
+Data type: `Boolean`
+
+state of whether reboots via cron are enabled
+
+##### <a name="reboot_day_of_week"></a>`reboot_day_of_week`
+
+Data type: `String`
+
+Contains day of week abbreviation for reboot
+e.g. "Sun", "Mon", "Tue", etc.
+
+##### <a name="reboot_hour"></a>`reboot_hour`
+
+Data type: `Integer`
+
+Hour for cron reboot
+
+##### <a name="reboot_minute"></a>`reboot_minute`
+
+Data type: `Integer`
+
+Minute for reboot
+
+##### <a name="reboot_months"></a>`reboot_months`
+
+Data type: `Array[String]`
+
+Names of months (as 3 letter abbreviations) for reboot
+Empty array implies to run every month
+
+##### <a name="reboot_week_of_month"></a>`reboot_week_of_month`
+
+Data type: `String`
+
+Week of the month for reboot, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
 ### <a name="profile_update_osyum_upgrade"></a>`profile_update_os::yum_upgrade`

@@ -87,16 +87,16 @@ class profile_update_os::kernel_upgrade (
     $notice_of_upgrade_text = "This server (${::fqdn}) will be updated and rebooted in"
     cron { '48_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 2 \
-&& /usr/bin/wall '${notice_of_upgrade_text} 48 hours.' )",
+&& /usr/bin/wall -n '${notice_of_upgrade_text} 48 hours.' )",
     }
     cron { '24_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 1 \
-&& /usr/bin/wall '${notice_of_upgrade_text} 24 hours.' )",
+&& /usr/bin/wall -n '${notice_of_upgrade_text} 24 hours.' )",
     }
     $update_one_hour_earlier = $update_hour - 1
     cron { '1_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
-&& /usr/bin/wall '${notice_of_upgrade_text} 1 hour.' )",
+&& /usr/bin/wall -n '${notice_of_upgrade_text} 1 hour.' )",
       hour    => $update_one_hour_earlier,
     }
 
