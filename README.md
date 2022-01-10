@@ -18,7 +18,7 @@ NCSA Common Puppet Profiles - configure update of os packages
 
 ## Description
 
-This puppet profile customizes a host to apply OS package updates.
+This puppet profile customizes a host to apply OS package updates, and optionally allows to set a scheduled reboot cycle.
 
 ## Setup
 

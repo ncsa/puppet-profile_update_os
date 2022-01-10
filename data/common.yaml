@@ -1,7 +1,7 @@
 ---
 profile_update_os::root_cron_scripts_dir: "/root/cron_scripts"
 
-profile_update_os::kernel_upgrade::enabled: true
+profile_update_os::kernel_upgrade::enabled: false
 profile_update_os::kernel_upgrade::random_delay: 30
 profile_update_os::kernel_upgrade::update_day_of_week: ""
 profile_update_os::kernel_upgrade::update_hour: 6
@@ -9,7 +9,14 @@ profile_update_os::kernel_upgrade::update_minute: 0
 profile_update_os::kernel_upgrade::update_months: []
 profile_update_os::kernel_upgrade::update_week_of_month: ""
 
-profile_update_os::yum_upgrade::enabled: true
+profile_update_os::scheduled_reboot::command: "/usr/sbin/reboot"
+profile_update_os::scheduled_reboot::enabled: false
+profile_update_os::scheduled_reboot::reboot_day_of_week: "Mon"
+profile_update_os::scheduled_reboot::reboot_hour: 1
+profile_update_os::scheduled_reboot::reboot_minute: 0
+profile_update_os::scheduled_reboot::reboot_months: "any"
+
+profile_update_os::yum_upgrade::enabled: false
 profile_update_os::yum_upgrade::excluded_packages:
   - "kernel"
   - "kernel-core*"
