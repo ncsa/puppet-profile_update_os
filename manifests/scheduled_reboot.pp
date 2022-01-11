@@ -47,35 +47,32 @@ class profile_update_os::scheduled_reboot (
       $motd_months = join( capitalize( $months_3char_abr ), '/' )
     }
 
-    cron { 'scheduled_reboot':
-      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} \
-&& ${command} )",
+    Cron {
       hour    => $reboot_hour,
       minute  => $reboot_minute,
       month   => $cron_reboot_months,
+      user    => 'root',
+      weekday => '*',
+    }
+
+    cron { 'scheduled_reboot':
+      command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} \
+&& ${command} )",
     }
     $notice_of_reboot_text = "This server (${::fqdn}) will be rebooted in"
     cron { '48_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} 2 \
 && /usr/bin/wall -n '${notice_of_reboot_text} 48 hours.' )",
-      hour    => $reboot_hour,
-      minute  => $reboot_minute,
-      month   => $cron_reboot_months,
     }
     cron { '24_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} 1 \
 && /usr/bin/wall -n '${notice_of_reboot_text} 24 hours.' )",
-      hour    => $reboot_hour,
-      minute  => $reboot_minute,
-      month   => $cron_reboot_months,
     }
     $reboot_one_hour_earlier = $reboot_hour - 1
     cron { '1_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} \
 && /usr/bin/wall -n '${notice_of_reboot_text} 1 hour.' )",
       hour    => $reboot_one_hour_earlier,
-      minute  => $reboot_minute,
-      month   => $cron_reboot_months,
     }
 
     ## UPDATE MOTD
