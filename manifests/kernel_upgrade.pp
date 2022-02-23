@@ -3,8 +3,25 @@
 # @param enabled
 #   state of whether kernel updates via cron are enabled
 #
+# @param message
+#   Message broadcast to users before update and reboot
+#
 # @param random_delay
 #   Maximum number of minutes to random delay before applying kernel updates
+#
+# @param reboot_always
+#   Always trigger reboot even if no updates require it
+#
+# @param reboot_num_pkgs_updated_since_reboot
+#   Minimum number of packages updated since reboot to trigger reboot
+#   Negative value means to ignore and use script default value
+#
+# @param reboot_num_pkgs_updated_today
+#   Minimum number of packages updated today to trigger reboot
+#   Negative value means to ignore and use script default value
+#
+# @param reboot_pkgs_list
+#   List of updated packages that should always trigger reboot
 #
 # @param update_day_of_week
 #   Contains day of week abbreviation for kernel update cron
@@ -31,7 +48,12 @@
 #   include profile_update_os::kernel_upgrade
 class profile_update_os::kernel_upgrade (
   Boolean       $enabled,
+  String        $message,
   Integer       $random_delay,
+  Boolean       $reboot_always,
+  Integer       $reboot_num_pkgs_updated_since_reboot,
+  Integer       $reboot_num_pkgs_updated_today,
+  Array[String] $reboot_pkgs_list,
   String        $update_day_of_week,
   Integer       $update_hour,
   Integer       $update_minute,
@@ -62,11 +84,42 @@ class profile_update_os::kernel_upgrade (
     }
 
     if ( $random_delay > 5 ) {
-      $script_options="--waitmax ${random_delay}"
+      $delay_options="--waitmax ${random_delay}"
     } elsif ( $random_delay <= 5 ) {
-      $script_options="--waitmin 0 --waitmax ${random_delay}"
+      $delay_options="--waitmin 0 --waitmax ${random_delay}"
     } else {
-      $script_options=''
+      $delay_options=''
+    }
+
+    if ! empty($message) {
+      $message_option="--message '${message}'"
+    } else {
+      $message_option=''
+    }
+
+    if ( $reboot_always ) {
+      $reboot_option='--reboot'
+    } else {
+      $reboot_option=''
+    }
+
+    if ( $reboot_num_pkgs_updated_since_reboot > -1 ) {
+      $updates_reboot_option="--updates_reboot ${reboot_num_pkgs_updated_since_reboot}"
+    } else {
+      $updates_reboot_option=''
+    }
+
+    if ( $reboot_num_pkgs_updated_today > -1 ) {
+      $updates_today_option="--updates_today ${reboot_num_pkgs_updated_today}"
+    } else {
+      $updates_today_option=''
+    }
+
+    if ! empty($reboot_pkgs_list) {
+      $reboot_pkgs_list_regex = join( $reboot_pkgs_list, '|' )
+      $reboot_pkgs_option="--reboot_pkgs '${reboot_pkgs_list_regex}'"
+    } else {
+      $reboot_pkgs_option=''
     }
 
     Cron {
@@ -79,7 +132,8 @@ class profile_update_os::kernel_upgrade (
 
     cron { 'kernel_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
-&& ${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh ${script_options} )",
+&& ${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh ${delay_options} ${message_option} \
+${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_option} )",
       require => [
         File['kernel_upgrade.sh'],
       ],

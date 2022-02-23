@@ -59,7 +59,12 @@ include profile_update_os::kernel_upgrade
 The following parameters are available in the `profile_update_os::kernel_upgrade` class:
 
 * [`enabled`](#enabled)
+* [`message`](#message)
 * [`random_delay`](#random_delay)
+* [`reboot_always`](#reboot_always)
+* [`reboot_num_pkgs_updated_since_reboot`](#reboot_num_pkgs_updated_since_reboot)
+* [`reboot_num_pkgs_updated_today`](#reboot_num_pkgs_updated_today)
+* [`reboot_pkgs_list`](#reboot_pkgs_list)
 * [`update_day_of_week`](#update_day_of_week)
 * [`update_hour`](#update_hour)
 * [`update_minute`](#update_minute)
@@ -72,11 +77,43 @@ Data type: `Boolean`
 
 state of whether kernel updates via cron are enabled
 
+##### <a name="message"></a>`message`
+
+Data type: `String`
+
+Message broadcast to users before update and reboot
+
 ##### <a name="random_delay"></a>`random_delay`
 
 Data type: `Integer`
 
 Maximum number of minutes to random delay before applying kernel updates
+
+##### <a name="reboot_always"></a>`reboot_always`
+
+Data type: `Boolean`
+
+Always trigger reboot even if no updates require it
+
+##### <a name="reboot_num_pkgs_updated_since_reboot"></a>`reboot_num_pkgs_updated_since_reboot`
+
+Data type: `Integer`
+
+Minimum number of packages updated since reboot to trigger reboot
+Negative value means to ignore and use script default value
+
+##### <a name="reboot_num_pkgs_updated_today"></a>`reboot_num_pkgs_updated_today`
+
+Data type: `Integer`
+
+Minimum number of packages updated today to trigger reboot
+Negative value means to ignore and use script default value
+
+##### <a name="reboot_pkgs_list"></a>`reboot_pkgs_list`
+
+Data type: `Array[String]`
+
+List of updated packages that should always trigger reboot
 
 ##### <a name="update_day_of_week"></a>`update_day_of_week`
 

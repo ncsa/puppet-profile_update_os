@@ -2,7 +2,12 @@
 profile_update_os::root_cron_scripts_dir: "/root/cron_scripts"
 
 profile_update_os::kernel_upgrade::enabled: false
+profile_update_os::kernel_upgrade::message: ""
 profile_update_os::kernel_upgrade::random_delay: 30
+profile_update_os::kernel_upgrade::reboot_always: false
+profile_update_os::kernel_upgrade::reboot_num_pkgs_updated_since_reboot: -1   ## -1 SETS TO USE SCRIPT DEFAULTS
+profile_update_os::kernel_upgrade::reboot_num_pkgs_updated_today: -1          ## -1 SETS TO USE SCRIPT DEFAULTS
+profile_update_os::kernel_upgrade::reboot_pkgs_list: []
 profile_update_os::kernel_upgrade::update_day_of_week: ""
 profile_update_os::kernel_upgrade::update_hour: 6
 profile_update_os::kernel_upgrade::update_minute: 0
