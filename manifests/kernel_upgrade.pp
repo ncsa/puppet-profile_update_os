@@ -178,8 +178,8 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
         $month_prefix = ' of'
       }
       /any/: {
-        $weeks = 'all'
-        $month_prefix = 's of'
+        $weeks = 'each'
+        $month_prefix = ' of'
       }
       default: {
         $weeks = 'unknown'
