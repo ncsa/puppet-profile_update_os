@@ -99,8 +99,8 @@ class profile_update_os::scheduled_reboot (
         $month_prefix = ' of'
       }
       /any/: {
-        $weeks = 'all'
-        $month_prefix = 's of'
+        $weeks = 'each'
+        $month_prefix = ' of'
       }
       default: {
         $weeks = 'unknown'
