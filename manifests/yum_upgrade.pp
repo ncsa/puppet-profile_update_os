@@ -62,11 +62,8 @@ class profile_update_os::yum_upgrade (
   String        $update_week_of_month,
   String        $yum_config_file,
 ) {
-
-  if $enabled
-  {
-
-    ensure_packages( $package, {'ensure' => 'present'} )
+  if $enabled {
+    ensure_packages( $package, { 'ensure' => 'present' })
 
     File_line {
       ensure   => 'present',
@@ -117,12 +114,12 @@ class profile_update_os::yum_upgrade (
     }
 
     if empty($update_day_of_week) {
-      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
+      $day_of_week = profile_update_os::calculate_day_of_week($facts['networking']['hostname'])
     } else {
       $day_of_week = $update_day_of_week
     }
     if empty($update_week_of_month) {
-      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
+      $week_num = profile_update_os::calculate_week_of_month($facts['networking']['hostname'])
     } else {
       $week_num = $update_week_of_month
     }
@@ -157,13 +154,10 @@ class profile_update_os::yum_upgrade (
     cron { 'yum-cron':
       ensure => absent,
     }
-
   }
-  else
-  {
+  else {
     cron { 'yum_upgrade':
       ensure => absent,
     }
   }
-
 }

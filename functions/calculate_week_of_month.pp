@@ -1,7 +1,6 @@
 # See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
 # for more information on native puppet functions.
 function profile_update_os::calculate_week_of_month(String $hostname) >> String {
-
   case $hostname {
     /[159]$/:      { '1' }
     /[0-9][aei]$/: { '1' }
@@ -19,5 +18,4 @@ function profile_update_os::calculate_week_of_month(String $hostname) >> String 
     # CURRENT THINKING ON '2' IS TO KEEP THEM AWAY FROM MOST HOLIDAYS
     default:       { '2' }
   }
-
 }

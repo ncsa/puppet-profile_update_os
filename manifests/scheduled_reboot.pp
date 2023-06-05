@@ -35,9 +35,7 @@ class profile_update_os::scheduled_reboot (
   Array[String] $reboot_months,
   String        $reboot_week_of_month,
 ) {
-
   if $enabled {
-
     if empty($reboot_months) {
       $cron_reboot_months = '*'
       $motd_months = 'each month'
@@ -59,7 +57,7 @@ class profile_update_os::scheduled_reboot (
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} \
 && ${command} )",
     }
-    $notice_of_reboot_text = "This server (${::fqdn}) will be rebooted in"
+    $notice_of_reboot_text = "This server (${facts['networking']['fqdn']}) will be rebooted in"
     cron { '48_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} 2 \
 && /usr/bin/wall -n '${notice_of_reboot_text} 48 hours.' )",
@@ -129,7 +127,7 @@ class profile_update_os::scheduled_reboot (
     }
 
     $motdcontent = @("EOF")
-      This system reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${::timezone}.
+      This system reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${facts['timezone']}.
       | EOF
     file { '/etc/motd.d':
       ensure => 'directory',
@@ -140,10 +138,8 @@ class profile_update_os::scheduled_reboot (
       mode    => '0644',
       content => $motdcontent,
     }
-
   }
-  else
-  {
+  else {
     cron { 'scheduled_reboot':
       ensure => absent,
     }
@@ -160,5 +156,4 @@ class profile_update_os::scheduled_reboot (
       ensure => absent,
     }
   }
-
 }

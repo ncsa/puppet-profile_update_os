@@ -8,7 +8,6 @@
 class profile_update_os (
   String $root_cron_scripts_dir,
 ) {
-
   include profile_update_os::kernel_upgrade
   include profile_update_os::scheduled_reboot
   include profile_update_os::yum_upgrade
@@ -24,5 +23,4 @@ class profile_update_os (
     group  => 'root',
     mode   => '0700',
   }
-
 }
