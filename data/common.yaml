@@ -14,6 +14,10 @@ profile_update_os::kernel_upgrade::update_minute: 0
 profile_update_os::kernel_upgrade::update_months: []
 profile_update_os::kernel_upgrade::update_week_of_month: ""
 
+profile_update_os::kpatch::enabled: true
+profile_update_os::kpatch::install_kpatch_patches: false
+profile_update_os::kpatch::kpatch_patch_version: "latest"
+
 profile_update_os::scheduled_reboot::command: "/usr/sbin/reboot"
 profile_update_os::scheduled_reboot::enabled: false
 profile_update_os::scheduled_reboot::reboot_day_of_week: "Mon"
