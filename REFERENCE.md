@@ -7,14 +7,15 @@
 ### Classes
 
 * [`profile_update_os`](#profile_update_os): configure functionality for upgrading OS packages
-* [`profile_update_os::kernel_upgrade`](#profile_update_oskernel_upgrade): Apply kernel updates via cron
-* [`profile_update_os::scheduled_reboot`](#profile_update_osscheduled_reboot): Reboot node at scheduled time via cron
-* [`profile_update_os::yum_upgrade`](#profile_update_osyum_upgrade): Apply yum updates via cron
+* [`profile_update_os::kernel_upgrade`](#profile_update_os--kernel_upgrade): Apply kernel updates via cron
+* [`profile_update_os::kpatch`](#profile_update_os--kpatch): Install kpatch
+* [`profile_update_os::scheduled_reboot`](#profile_update_os--scheduled_reboot): Reboot node at scheduled time via cron
+* [`profile_update_os::yum_upgrade`](#profile_update_os--yum_upgrade): Apply yum updates via cron
 
 ### Functions
 
-* [`profile_update_os::calculate_day_of_week`](#profile_update_oscalculate_day_of_week): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
-* [`profile_update_os::calculate_week_of_month`](#profile_update_oscalculate_week_of_month): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
+* [`profile_update_os::calculate_day_of_week`](#profile_update_os--calculate_day_of_week): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
+* [`profile_update_os::calculate_week_of_month`](#profile_update_os--calculate_week_of_month): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
 
 ## Classes
 
@@ -34,15 +35,15 @@ include profile_update_os
 
 The following parameters are available in the `profile_update_os` class:
 
-* [`root_cron_scripts_dir`](#root_cron_scripts_dir)
+* [`root_cron_scripts_dir`](#-profile_update_os--root_cron_scripts_dir)
 
-##### <a name="root_cron_scripts_dir"></a>`root_cron_scripts_dir`
+##### <a name="-profile_update_os--root_cron_scripts_dir"></a>`root_cron_scripts_dir`
 
 Data type: `String`
 
 Directory where root cron scripts exist
 
-### <a name="profile_update_oskernel_upgrade"></a>`profile_update_os::kernel_upgrade`
+### <a name="profile_update_os--kernel_upgrade"></a>`profile_update_os::kernel_upgrade`
 
 Apply kernel updates via cron
 
@@ -58,64 +59,64 @@ include profile_update_os::kernel_upgrade
 
 The following parameters are available in the `profile_update_os::kernel_upgrade` class:
 
-* [`enabled`](#enabled)
-* [`message`](#message)
-* [`random_delay`](#random_delay)
-* [`reboot_always`](#reboot_always)
-* [`reboot_num_pkgs_updated_since_reboot`](#reboot_num_pkgs_updated_since_reboot)
-* [`reboot_num_pkgs_updated_today`](#reboot_num_pkgs_updated_today)
-* [`reboot_pkgs_list`](#reboot_pkgs_list)
-* [`update_day_of_week`](#update_day_of_week)
-* [`update_hour`](#update_hour)
-* [`update_minute`](#update_minute)
-* [`update_months`](#update_months)
-* [`update_week_of_month`](#update_week_of_month)
+* [`enabled`](#-profile_update_os--kernel_upgrade--enabled)
+* [`message`](#-profile_update_os--kernel_upgrade--message)
+* [`random_delay`](#-profile_update_os--kernel_upgrade--random_delay)
+* [`reboot_always`](#-profile_update_os--kernel_upgrade--reboot_always)
+* [`reboot_num_pkgs_updated_since_reboot`](#-profile_update_os--kernel_upgrade--reboot_num_pkgs_updated_since_reboot)
+* [`reboot_num_pkgs_updated_today`](#-profile_update_os--kernel_upgrade--reboot_num_pkgs_updated_today)
+* [`reboot_pkgs_list`](#-profile_update_os--kernel_upgrade--reboot_pkgs_list)
+* [`update_day_of_week`](#-profile_update_os--kernel_upgrade--update_day_of_week)
+* [`update_hour`](#-profile_update_os--kernel_upgrade--update_hour)
+* [`update_minute`](#-profile_update_os--kernel_upgrade--update_minute)
+* [`update_months`](#-profile_update_os--kernel_upgrade--update_months)
+* [`update_week_of_month`](#-profile_update_os--kernel_upgrade--update_week_of_month)
 
-##### <a name="enabled"></a>`enabled`
+##### <a name="-profile_update_os--kernel_upgrade--enabled"></a>`enabled`
 
 Data type: `Boolean`
 
 state of whether kernel updates via cron are enabled
 
-##### <a name="message"></a>`message`
+##### <a name="-profile_update_os--kernel_upgrade--message"></a>`message`
 
 Data type: `String`
 
 Message broadcast to users before update and reboot
 
-##### <a name="random_delay"></a>`random_delay`
+##### <a name="-profile_update_os--kernel_upgrade--random_delay"></a>`random_delay`
 
 Data type: `Integer`
 
 Maximum number of minutes to random delay before applying kernel updates
 
-##### <a name="reboot_always"></a>`reboot_always`
+##### <a name="-profile_update_os--kernel_upgrade--reboot_always"></a>`reboot_always`
 
 Data type: `Boolean`
 
 Always trigger reboot even if no updates require it
 
-##### <a name="reboot_num_pkgs_updated_since_reboot"></a>`reboot_num_pkgs_updated_since_reboot`
+##### <a name="-profile_update_os--kernel_upgrade--reboot_num_pkgs_updated_since_reboot"></a>`reboot_num_pkgs_updated_since_reboot`
 
 Data type: `Integer`
 
 Minimum number of packages updated since reboot to trigger reboot
 Negative value means to ignore and use script default value
 
-##### <a name="reboot_num_pkgs_updated_today"></a>`reboot_num_pkgs_updated_today`
+##### <a name="-profile_update_os--kernel_upgrade--reboot_num_pkgs_updated_today"></a>`reboot_num_pkgs_updated_today`
 
 Data type: `Integer`
 
 Minimum number of packages updated today to trigger reboot
 Negative value means to ignore and use script default value
 
-##### <a name="reboot_pkgs_list"></a>`reboot_pkgs_list`
+##### <a name="-profile_update_os--kernel_upgrade--reboot_pkgs_list"></a>`reboot_pkgs_list`
 
 Data type: `Array[String]`
 
 List of updated packages that should always trigger reboot
 
-##### <a name="update_day_of_week"></a>`update_day_of_week`
+##### <a name="-profile_update_os--kernel_upgrade--update_day_of_week"></a>`update_day_of_week`
 
 Data type: `String`
 
@@ -123,35 +124,78 @@ Contains day of week abbreviation for kernel update cron
 e.g. "Sun", "Mon", "Tue", etc.
 If not defined day of week is calculated from hostname
 
-##### <a name="update_hour"></a>`update_hour`
+##### <a name="-profile_update_os--kernel_upgrade--update_hour"></a>`update_hour`
 
 Data type: `Integer`
 
 Hour for kernel update cron
 There is a random delay before the kernel update occurs
 
-##### <a name="update_minute"></a>`update_minute`
+##### <a name="-profile_update_os--kernel_upgrade--update_minute"></a>`update_minute`
 
 Data type: `Integer`
 
 Minute for kernel update cron
 There is a random delay before the kernel update occurs
 
-##### <a name="update_months"></a>`update_months`
+##### <a name="-profile_update_os--kernel_upgrade--update_months"></a>`update_months`
 
 Data type: `Array[String]`
 
 Names of months (as 3 letter abbreviations) for kernel update cron
 Empty array implies to run every month
 
-##### <a name="update_week_of_month"></a>`update_week_of_month`
+##### <a name="-profile_update_os--kernel_upgrade--update_week_of_month"></a>`update_week_of_month`
 
 Data type: `String`
 
 Week of the month for kernel update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
-### <a name="profile_update_osscheduled_reboot"></a>`profile_update_os::scheduled_reboot`
+### <a name="profile_update_os--kpatch"></a>`profile_update_os::kpatch`
+
+Install kpatch
+
+#### Examples
+
+##### 
+
+```puppet
+include profile_update_os::kpatch
+```
+
+#### Parameters
+
+The following parameters are available in the `profile_update_os::kpatch` class:
+
+* [`enabled`](#-profile_update_os--kpatch--enabled)
+* [`install_kpatch_patches`](#-profile_update_os--kpatch--install_kpatch_patches)
+* [`kpatch_patch_version`](#-profile_update_os--kpatch--kpatch_patch_version)
+
+##### <a name="-profile_update_os--kpatch--enabled"></a>`enabled`
+
+Data type: `Boolean`
+
+Install kpatch package and start service, noop if set to false (no clean-up)
+
+##### <a name="-profile_update_os--kpatch--install_kpatch_patches"></a>`install_kpatch_patches`
+
+Data type: `Boolean`
+
+Install the kpatch-patch package for the current kernel
+
+##### <a name="-profile_update_os--kpatch--kpatch_patch_version"></a>`kpatch_patch_version`
+
+Data type: `String`
+
+Specify the exact kpatch-patch to install (default is to go to latest)
+
+Example locking kpatch-patch to version+release 0-0 under the 4.18.0-372.41.1 kernel:
+```
+profile_update_os::kpatch::kpatch_patch_version: "4_18_0-372_41_1-0-0.el8_6"
+```
+
+### <a name="profile_update_os--scheduled_reboot"></a>`profile_update_os::scheduled_reboot`
 
 Reboot node at scheduled time via cron
 
@@ -167,60 +211,60 @@ include profile_update_os::scheduled_reboot
 
 The following parameters are available in the `profile_update_os::scheduled_reboot` class:
 
-* [`command`](#command)
-* [`enabled`](#enabled)
-* [`reboot_day_of_week`](#reboot_day_of_week)
-* [`reboot_hour`](#reboot_hour)
-* [`reboot_minute`](#reboot_minute)
-* [`reboot_months`](#reboot_months)
-* [`reboot_week_of_month`](#reboot_week_of_month)
+* [`command`](#-profile_update_os--scheduled_reboot--command)
+* [`enabled`](#-profile_update_os--scheduled_reboot--enabled)
+* [`reboot_day_of_week`](#-profile_update_os--scheduled_reboot--reboot_day_of_week)
+* [`reboot_hour`](#-profile_update_os--scheduled_reboot--reboot_hour)
+* [`reboot_minute`](#-profile_update_os--scheduled_reboot--reboot_minute)
+* [`reboot_months`](#-profile_update_os--scheduled_reboot--reboot_months)
+* [`reboot_week_of_month`](#-profile_update_os--scheduled_reboot--reboot_week_of_month)
 
-##### <a name="command"></a>`command`
+##### <a name="-profile_update_os--scheduled_reboot--command"></a>`command`
 
 Data type: `String`
 
 Command to handle the reboot
 
-##### <a name="enabled"></a>`enabled`
+##### <a name="-profile_update_os--scheduled_reboot--enabled"></a>`enabled`
 
 Data type: `Boolean`
 
 state of whether reboots via cron are enabled
 
-##### <a name="reboot_day_of_week"></a>`reboot_day_of_week`
+##### <a name="-profile_update_os--scheduled_reboot--reboot_day_of_week"></a>`reboot_day_of_week`
 
 Data type: `String`
 
 Contains day of week abbreviation for reboot
 e.g. "Sun", "Mon", "Tue", etc.
 
-##### <a name="reboot_hour"></a>`reboot_hour`
+##### <a name="-profile_update_os--scheduled_reboot--reboot_hour"></a>`reboot_hour`
 
 Data type: `Integer`
 
 Hour for cron reboot
 
-##### <a name="reboot_minute"></a>`reboot_minute`
+##### <a name="-profile_update_os--scheduled_reboot--reboot_minute"></a>`reboot_minute`
 
 Data type: `Integer`
 
 Minute for reboot
 
-##### <a name="reboot_months"></a>`reboot_months`
+##### <a name="-profile_update_os--scheduled_reboot--reboot_months"></a>`reboot_months`
 
 Data type: `Array[String]`
 
 Names of months (as 3 letter abbreviations) for reboot
 Empty array implies to run every month
 
-##### <a name="reboot_week_of_month"></a>`reboot_week_of_month`
+##### <a name="-profile_update_os--scheduled_reboot--reboot_week_of_month"></a>`reboot_week_of_month`
 
 Data type: `String`
 
 Week of the month for reboot, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
-### <a name="profile_update_osyum_upgrade"></a>`profile_update_os::yum_upgrade`
+### <a name="profile_update_os--yum_upgrade"></a>`profile_update_os::yum_upgrade`
 
 Apply yum updates via cron
 
@@ -236,63 +280,63 @@ include profile_update_os::yum_upgrade
 
 The following parameters are available in the `profile_update_os::yum_upgrade` class:
 
-* [`command`](#command)
-* [`config_file`](#config_file)
-* [`enabled`](#enabled)
-* [`excluded_packages`](#excluded_packages)
-* [`random_delay`](#random_delay)
-* [`package`](#package)
-* [`service`](#service)
-* [`update_day_of_week`](#update_day_of_week)
-* [`update_hour`](#update_hour)
-* [`update_minute`](#update_minute)
-* [`update_months`](#update_months)
-* [`update_week_of_month`](#update_week_of_month)
-* [`yum_config_file`](#yum_config_file)
+* [`command`](#-profile_update_os--yum_upgrade--command)
+* [`config_file`](#-profile_update_os--yum_upgrade--config_file)
+* [`enabled`](#-profile_update_os--yum_upgrade--enabled)
+* [`excluded_packages`](#-profile_update_os--yum_upgrade--excluded_packages)
+* [`random_delay`](#-profile_update_os--yum_upgrade--random_delay)
+* [`package`](#-profile_update_os--yum_upgrade--package)
+* [`service`](#-profile_update_os--yum_upgrade--service)
+* [`update_day_of_week`](#-profile_update_os--yum_upgrade--update_day_of_week)
+* [`update_hour`](#-profile_update_os--yum_upgrade--update_hour)
+* [`update_minute`](#-profile_update_os--yum_upgrade--update_minute)
+* [`update_months`](#-profile_update_os--yum_upgrade--update_months)
+* [`update_week_of_month`](#-profile_update_os--yum_upgrade--update_week_of_month)
+* [`yum_config_file`](#-profile_update_os--yum_upgrade--yum_config_file)
 
-##### <a name="command"></a>`command`
+##### <a name="-profile_update_os--yum_upgrade--command"></a>`command`
 
 Data type: `String`
 
 Command to apply yum updates for the OS version
 
-##### <a name="config_file"></a>`config_file`
+##### <a name="-profile_update_os--yum_upgrade--config_file"></a>`config_file`
 
 Data type: `String`
 
 Full path to yum update config file for the OS version
 
-##### <a name="enabled"></a>`enabled`
+##### <a name="-profile_update_os--yum_upgrade--enabled"></a>`enabled`
 
 Data type: `Boolean`
 
 State of whether yum updates via cron are enabled
 
-##### <a name="excluded_packages"></a>`excluded_packages`
+##### <a name="-profile_update_os--yum_upgrade--excluded_packages"></a>`excluded_packages`
 
 Data type: `Array`
 
 List of packages to exclude from yum updates
 
-##### <a name="random_delay"></a>`random_delay`
+##### <a name="-profile_update_os--yum_upgrade--random_delay"></a>`random_delay`
 
 Data type: `Integer`
 
 Maximum number of minutes to randomly wait before applying yum updates
 
-##### <a name="package"></a>`package`
+##### <a name="-profile_update_os--yum_upgrade--package"></a>`package`
 
 Data type: `String`
 
 Package name for the yum update package for the OS version
 
-##### <a name="service"></a>`service`
+##### <a name="-profile_update_os--yum_upgrade--service"></a>`service`
 
 Data type: `String`
 
 Service name for the yum update service for the OS version
 
-##### <a name="update_day_of_week"></a>`update_day_of_week`
+##### <a name="-profile_update_os--yum_upgrade--update_day_of_week"></a>`update_day_of_week`
 
 Data type: `String`
 
@@ -300,35 +344,35 @@ Day of week abbreviation for yum update cron
 e.g. "Sun", "Mon", "Tue", etc.
 If not defined day of week is calculated from hostname
 
-##### <a name="update_hour"></a>`update_hour`
+##### <a name="-profile_update_os--yum_upgrade--update_hour"></a>`update_hour`
 
 Data type: `Integer`
 
 Hour for yum update cron
 There is a random delay of up to 30 minutes before the yum update occurs
 
-##### <a name="update_minute"></a>`update_minute`
+##### <a name="-profile_update_os--yum_upgrade--update_minute"></a>`update_minute`
 
 Data type: `Integer`
 
 Minute for yum update cron
 There is a random delay of up to 30 minutes before the yum update occurs
 
-##### <a name="update_months"></a>`update_months`
+##### <a name="-profile_update_os--yum_upgrade--update_months"></a>`update_months`
 
 Data type: `Array[String]`
 
 Names of months (as 3 letter abbreviations) for kernel update cron
 Empty array implies to run every month
 
-##### <a name="update_week_of_month"></a>`update_week_of_month`
+##### <a name="-profile_update_os--yum_upgrade--update_week_of_month"></a>`update_week_of_month`
 
 Data type: `String`
 
 Week of the month for yum update cron, e.g. "1"-"5" or "any"
 If not defined cron runs every week
 
-##### <a name="yum_config_file"></a>`yum_config_file`
+##### <a name="-profile_update_os--yum_upgrade--yum_config_file"></a>`yum_config_file`
 
 Data type: `String`
 
@@ -336,7 +380,7 @@ Full path to yum config file for the OS version
 
 ## Functions
 
-### <a name="profile_update_oscalculate_day_of_week"></a>`profile_update_os::calculate_day_of_week`
+### <a name="profile_update_os--calculate_day_of_week"></a>`profile_update_os::calculate_day_of_week`
 
 Type: Puppet Language
 
@@ -356,7 +400,7 @@ Data type: `String`
 
 
 
-### <a name="profile_update_oscalculate_week_of_month"></a>`profile_update_os::calculate_week_of_month`
+### <a name="profile_update_os--calculate_week_of_month"></a>`profile_update_os::calculate_week_of_month`
 
 Type: Puppet Language
 

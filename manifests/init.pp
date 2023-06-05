@@ -12,6 +12,14 @@ class profile_update_os (
   include profile_update_os::scheduled_reboot
   include profile_update_os::yum_upgrade
 
+  # Only include kpatch on Redhat systems (centos/rocky don't seem to publish kpatch-patches)
+  case $facts['os']['name'] {
+    'Redhat' : {
+      include profile_update_os::kpatch
+    }
+    default  : {} # do nothing
+  }
+
   file { $root_cron_scripts_dir:
     ensure => 'directory',
   }
