@@ -60,16 +60,14 @@ class profile_update_os::kernel_upgrade (
   Array[String] $update_months,
   String        $update_week_of_month,
 ) {
-
   if $enabled {
-
     if empty($update_day_of_week) {
-      $day_of_week = profile_update_os::calculate_day_of_week($facts['hostname'])
+      $day_of_week = profile_update_os::calculate_day_of_week($facts['networking']['hostname'])
     } else {
       $day_of_week = $update_day_of_week
     }
     if empty($update_week_of_month) {
-      $week_num = profile_update_os::calculate_week_of_month($facts['hostname'])
+      $week_num = profile_update_os::calculate_week_of_month($facts['networking']['hostname'])
     } else {
       $week_num = $update_week_of_month
     }
@@ -138,7 +136,7 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
         File['kernel_upgrade.sh'],
       ],
     }
-    $notice_of_upgrade_text = "This server (${::fqdn}) will be updated and rebooted in"
+    $notice_of_upgrade_text = "This server (${facts['networking']['fqdn']}) will be updated and rebooted in"
     cron { '48_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 2 \
 && /usr/bin/wall -n '${notice_of_upgrade_text} 48 hours.' )",
@@ -208,7 +206,7 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
     }
 
     $motdcontent = @("EOF")
-      This system updates and reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${::timezone}.
+      This system updates and reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${facts['timezone']}.
       | EOF
     ensure_resource( 'file', '/etc/motd.d', { 'ensure' => 'directory', 'mode' => '0755', })
     file { '/etc/motd.d/kernel_upgrade':
@@ -225,10 +223,8 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
       group  => 'root',
       mode   => '0700',
     }
-
   }
-  else
-  {
+  else {
     cron { 'kernel_upgrade':
       ensure => absent,
     }
@@ -248,7 +244,5 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
       ensure => absent,
       path   => "${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh",
     }
-
   }
-
 }
