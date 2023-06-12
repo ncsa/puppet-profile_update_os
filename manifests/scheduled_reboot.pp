@@ -129,10 +129,9 @@ class profile_update_os::scheduled_reboot (
     $motdcontent = @("EOF")
       This system reboots ${weeks} ${day}${month_prefix} ${motd_months} at ${hour}:${minute} ${facts['timezone']}.
       | EOF
-    file { '/etc/motd.d':
-      ensure => 'directory',
-      mode   => '0755',
-    }
+
+    ensure_resource( 'file', '/etc/motd.d', { 'ensure' => 'directory', 'mode' => '0755', })
+
     file { '/etc/motd.d/scheduled_reboot':
       ensure  => file,
       mode    => '0644',
