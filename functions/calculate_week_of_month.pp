@@ -1,21 +1,12 @@
-# See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
-# for more information on native puppet functions.
+# Select the default week of the month that a host applies os updates.
+# Calculated to be the modulus 4 of the last character of the short hostname.
 function profile_update_os::calculate_week_of_month(String $hostname) >> String {
   case $hostname {
-    /[159]$/:      { '1' }
-    /[0-9][aei]$/: { '1' }
-    /\-[aei]$/: { '1' }
-    /[26]$/:       { '2' }
-    /[0-9][bfj]$/: { '2' }
-    /\-[bfj]$/: { '2' }
-    /[37]$/:       { '3' }
-    /[0-9][cgk]$/: { '3' }
-    /\-[cgk]$/: { '3' }
-    /[048]$/:      { '4' }
-    /[0-9][dhl]$/: { '4' }
-    /\-[dhl]$/: { '4' }
-    # THE DEFAULT NEEDS TO BE UPDATED TO SPREAD HOSTS OUT THROUGHOUT THE MONTH
-    # CURRENT THINKING ON '2' IS TO KEEP THEM AWAY FROM MOST HOLIDAYS
-    default:       { '2' }
+    /[159]$/, /(?i-mx:[aeimquy]$)/: { '1' }
+    /[26]$/, /(?i-mx:[bfjnrvz]$)/:  { '2' }
+    /[37]$/, /(?i-mx:[cgkosw]$)/:   { '3' }
+    /[048]$/, /(?i-mx:[dhlptx]$)/:  { '4' }
+    # THINKING ON '2' IS TO KEEP THEM AWAY FROM MOST HOLIDAYS
+    default: { '2' }
   }
 }

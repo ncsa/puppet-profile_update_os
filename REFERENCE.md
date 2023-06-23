@@ -14,8 +14,8 @@
 
 ### Functions
 
-* [`profile_update_os::calculate_day_of_week`](#profile_update_os--calculate_day_of_week): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
-* [`profile_update_os::calculate_week_of_month`](#profile_update_os--calculate_week_of_month): See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html for more information on native puppet functions.
+* [`profile_update_os::calculate_day_of_week`](#profile_update_os--calculate_day_of_week): Select the default day of the week that a host applies os updates. Wed is default to avoid holidays, long weekends, etc. dev/test nodes updat
+* [`profile_update_os::calculate_week_of_month`](#profile_update_os--calculate_week_of_month): Select the default week of the month that a host applies os updates. Calculated to be the modulus 4 of the last character of the short hostna
 
 ## Classes
 
@@ -384,13 +384,15 @@ Full path to yum config file for the OS version
 
 Type: Puppet Language
 
-See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
-for more information on native puppet functions.
+Select the default day of the week that a host applies os updates.
+Wed is default to avoid holidays, long weekends, etc.
+dev/test nodes update the day before the default for testing.
 
 #### `profile_update_os::calculate_day_of_week(String $hostname)`
 
-See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
-for more information on native puppet functions.
+Select the default day of the week that a host applies os updates.
+Wed is default to avoid holidays, long weekends, etc.
+dev/test nodes update the day before the default for testing.
 
 Returns: `String`
 
@@ -404,13 +406,13 @@ Data type: `String`
 
 Type: Puppet Language
 
-See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
-for more information on native puppet functions.
+Select the default week of the month that a host applies os updates.
+Calculated to be the modulus 4 of the last character of the short hostname.
 
 #### `profile_update_os::calculate_week_of_month(String $hostname)`
 
-See https://puppet.com/docs/puppet/latest/lang_write_functions_in_puppet.html
-for more information on native puppet functions.
+Select the default week of the month that a host applies os updates.
+Calculated to be the modulus 4 of the last character of the short hostname.
 
 Returns: `String`
 
