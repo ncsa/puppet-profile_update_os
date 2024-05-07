@@ -60,16 +60,16 @@ class profile_update_os::scheduled_reboot (
     $notice_of_reboot_text = "This server (${facts['networking']['fqdn']}) will be rebooted in"
     cron { '48_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} 2 \
-&& /usr/bin/wall -n '${notice_of_reboot_text} 48 hours.' )",
+&& /usr/bin/wall \"${notice_of_reboot_text} 48 hours at $(date -d '+48 hours' +'\\%F \\%R \\%Z').\" )",
     }
     cron { '24_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} 1 \
-&& /usr/bin/wall -n '${notice_of_reboot_text} 24 hours.' )",
+&& /usr/bin/wall \"${notice_of_reboot_text} 24 hours at $(date -d '+24 hours' +'\\%F \\%R \\%Z').\" )",
     }
     $reboot_one_hour_earlier = $reboot_hour - 1
     cron { '1_hour_notice_of_reboot':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${reboot_week_of_month} ${reboot_day_of_week} \
-&& /usr/bin/wall -n '${notice_of_reboot_text} 1 hour.' )",
+&& /usr/bin/wall \"${notice_of_reboot_text} 1 hour at $(date -d '+1 hour' +'\\%F \\%R \\%Z').\" )",
       hour    => $reboot_one_hour_earlier,
     }
 
