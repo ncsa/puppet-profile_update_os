@@ -139,16 +139,16 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
     $notice_of_upgrade_text = "This server (${facts['networking']['fqdn']}) will be updated and rebooted in"
     cron { '48_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 2 \
-&& /usr/bin/wall -n '${notice_of_upgrade_text} 48 hours.' )",
+&& /usr/bin/wall \"${notice_of_upgrade_text} 48 hours at $(date -d '+48 hours' +'\\%F \\%R \\%Z').\" )",
     }
     cron { '24_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} 1 \
-&& /usr/bin/wall -n '${notice_of_upgrade_text} 24 hours.' )",
+&& /usr/bin/wall \"${notice_of_upgrade_text} 24 hours at $(date -d '+24 hours' +'\\%F \\%R \\%Z').\" )",
     }
     $update_one_hour_earlier = $update_hour - 1
     cron { '1_hour_notice_of_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
-&& /usr/bin/wall -n '${notice_of_upgrade_text} 1 hour.' )",
+&& /usr/bin/wall \"${notice_of_upgrade_text} 1 hour at $(date -d '+1 hour' +'\\%F \\%R \\%Z').\" )",
       hour    => $update_one_hour_earlier,
     }
 
