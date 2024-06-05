@@ -1,4 +1,6 @@
 # @summary Apply yum updates via cron
+# 
+# While the class name refers to 'yum', this class also supports 'zypper' in SUSE.
 #
 # @param command
 #   Command to apply yum updates for the OS version
@@ -69,48 +71,66 @@ class profile_update_os::yum_upgrade (
       ensure   => 'present',
       multiple => 'false',
       require  => Package[$package],
-      notify   => Service[$service],
+      #notify   => Service[$service],
     }
 
+    # SETUP EXCLUDED PACKAGES TO BE IGNORED
     # PERHAPS SHOULD BE MOVED TO A DIFFERENT PROFILE CLASS
     # IS HERE TO MAKE SURE KERNEL PACKAGE EXCLUDED BY DEFAULT
-    if empty($excluded_packages) {
-      file_line { 'yum_config_exclude':
-        ensure            => 'absent',
-        #line              => 'exclude',
-        path              => $yum_config_file,
-        match             => '^exclude*',
-        match_for_absence => true,
+    case $facts['os']['family'] {
+      'RedHat': {
+        if empty($excluded_packages) {
+          file_line { 'yum_config_exclude':
+            ensure            => 'absent',
+            path              => $yum_config_file,
+            match             => '^exclude*',
+            match_for_absence => true,
+          }
+        } else {
+          $excludes = join($excluded_packages, ' ')
+          # include ::yum
+          # yum::config { 'exclude': ensure => $excludes, }
+          file_line { 'yum_config_exclude':
+            path  => $yum_config_file,
+            line  => "exclude=${excludes}",
+            match => '^exclude*',
+          }
+        }
+
+        # ADDITIONAL YUM/DNF SPECIFIC SETTINGS
+        file_line { 'yum_update_config_apply_updates':
+          path  => $config_file,
+          line  => 'apply_updates = yes',
+          match => '^apply_updates*',
+        }
+        file_line { 'yum_update_config_random_sleep':
+          path  => $config_file,
+          line  => 'random_sleep = 0',
+          match => '^random_sleep*',
+        }
       }
-    } else {
-      $excludes = join($excluded_packages, ' ')
-#      include ::yum
-#      yum::config { 'exclude': ensure => $excludes, }
-      file_line { 'yum_config_exclude':
-        path  => $yum_config_file,
-        line  => "exclude=${excludes}",
-        match => '^exclude*',
+      'Suse': {
+        $excluded_packages.each |String $package| {
+          exec { "zypper lock package ${package}":
+            command => "zypper addlock --comment 'puppet:${module_name}' ${package}",
+            unless  => "zypper locks | grep -qw ${package}",
+            path    => ['/usr/bin', '/sbin', '/bin'],
+          }
+        }
+      }
+      default: {
+        fail('Only RedHat and Suse OS families are supported at this time')
       }
     }
 
-    file_line { 'yum_update_config_apply_updates':
-      path  => $config_file,
-      line  => 'apply_updates = yes',
-      match => '^apply_updates*',
-    }
-
-    file_line { 'yum_update_config_random_sleep':
-      path  => $config_file,
-      line  => 'random_sleep = 0',
-      match => '^random_sleep*',
-    }
-
-    service { $service:
-      ensure     => stopped,
-      enable     => false,
-      hasstatus  => true,
-      hasrestart => true,
-      require    => Package[$package],
+    if ( ! empty( $service ) ) {
+      service { $service:
+        ensure     => stopped,
+        enable     => false,
+        hasstatus  => true,
+        hasrestart => true,
+        require    => Package[$package],
+      }
     }
 
     if empty($update_day_of_week) {
@@ -149,10 +169,6 @@ class profile_update_os::yum_upgrade (
     cron { 'yum_upgrade':
       command => "( ${profile_update_os::root_cron_scripts_dir}/run-if-today.sh ${week_num} ${day_of_week} \
 && ${wait_command} && ${command} )",
-    }
-    # ENSURE OLD NAME OF CRON NO LONGER EXISTS - CAN BE REMOVED IN FUTURE AFTER SURE CLEANED UP
-    cron { 'yum-cron':
-      ensure => absent,
     }
   }
   else {

@@ -27,10 +27,6 @@ profile_update_os::scheduled_reboot::reboot_months: []
 profile_update_os::scheduled_reboot::reboot_week_of_month: "any"
 
 profile_update_os::yum_upgrade::enabled: false
-profile_update_os::yum_upgrade::excluded_packages:
-  - "kernel"
-  - "kernel-core*"
-  - "kernel-modules*"
 profile_update_os::yum_upgrade::random_delay: 30
 profile_update_os::yum_upgrade::update_day_of_week: ""
 profile_update_os::yum_upgrade::update_hour: 5
