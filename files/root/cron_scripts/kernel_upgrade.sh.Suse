@@ -1,0 +1,133 @@
+#!/bin/bash
+# KERNEL UPGRADE SCRIPT FOR SUSE
+
+# DEFAULT VALUES
+DEF_SHUTDOWN_MESSAGE="This server ($(hostname)) WILL be rebooted for a scheduled kernel upgrade. Please log out now."
+DEF_NUM_UPDATES_TODAY=5
+DEF_UPDATES_SINCE_REBOOT=10
+DEF_PKGS_REQ_REBOOT="kernel|dkms|lustre|zfs|lib"
+DEF_WAITMAX=30
+DEF_WAITMIN=5
+
+function usage()
+{
+        echo "usage: `basename $0` [OPTION]..."
+        echo "Attempt to update kernel packages and optionally reboot"
+        echo
+        echo "Options:"
+        echo " -n, --now, --nodelay  Apply with no wait delay, ignore waitmax & waitmin"
+        echo " --message MESSAGE     Message to display to users before reboot"
+        echo " -r, --reboot          Force reboot always"
+        echo " --reboot_pkgs         Regular expression of update packages that should"
+        echo "                       always trigger a fresh reboot if updated"
+        echo " --updates_today       Minimum number of packages updated today to trigger"
+        echo "                       a fresh reboot"
+        echo " --updates_reboot      Minimum number of packages updated since reboot to"
+        echo "                       trigger a fresh reboot"
+        echo " --waitmax             Maximum time to sleep before updating"
+        echo " --waitmin             Minimum time to sleep before updating"
+        echo " -h, --help            Display help"
+        exit 1
+}
+
+# PARSE PARAMETERS AND ASSIGN VALUES
+while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
+	--message )
+		shift; SHUTDOWN_MESSAGE="$1"
+		;;
+	-n | --now | --nodelay ) 
+    		NODELAY=1
+		;;
+	-r | --reboot )
+        	REBOOT=1
+		;;
+	--reboot_pkgs )
+		shift; PKGS_REQ_REBOOT="$1"
+		;;
+	--updates_today )
+		shift; NUM_PKG_UPDATES_TODAY_REBOOT=$1
+		;;
+	--updates_reboot )
+		shift; NUM_PKG_UPDATES_SINCE_REBOOT=$1
+		;;
+	--waitmax )
+		shift; WAITMAX="$1"
+		;;
+	--waitmin )
+		shift; WAITMIN="$1"
+		;;
+	-h | --help )
+		usage; exit
+		;;
+	* )
+		usage; exit 1
+esac; shift; done
+if [[ "$1" == '--' ]]; then shift; fi
+
+# SET DEFAULTS IF NOT MANUALLY SET
+SHUTDOWN_MESSAGE="${SHUTDOWN_MESSAGE:=$DEF_SHUTDOWN_MESSAGE}"
+NODELAY=${NODELAY:=0}
+REBOOT=${REBOOT:=0}
+NUM_UPDATES_TODAY=${NUM_PKG_UPDATES_TODAY_REBOOT:=$DEF_NUM_UPDATES_TODAY}
+UPDATES_SINCE_REBOOT=${NUM_PKG_UPDATES_SINCE_REBOOT:=$DEF_UPDATES_SINCE_REBOOT}
+PKGS_REQ_REBOOT="${PKGS_REQ_REBOOT:=$DEF_PKGS_REQ_REBOOT}"
+WAITMAX="${WAITMAX:=$DEF_WAITMAX}"
+WAITMIN="${WAITMIN:=$DEF_WAITMIN}"
+
+# CALCULATE WAIT TIME
+if [[ $NODELAY -ge 1 ]]; then
+	WAITTIME=0
+else
+	WAITTIME=`shuf -i $WAITMIN-$WAITMAX -n 1`
+fi
+
+# SHUTDOWN NOTICE
+#echo $SHUTDOWN_MESSAGE
+wall -n "$SHUTDOWN_MESSAGE"
+
+# SLEEP 0 OR MORE MINUTES
+#echo "Waiting for $WAITTIME minutes before applying updates"
+sleep $((WAITTIME))m
+
+wall -n "$SHUTDOWN_MESSAGE"
+/sbin/shutdown -k now "$SHUTDOWN_MESSAGE"
+
+# KERNEL UPDATE
+mv /etc/zypp/locks /etc/zypp/locks.temp.disabled && \
+  /usr/bin/zypper update -y kernel 'kernel*'
+mv /etc/zypp/locks.temp.disabled /etc/zypp/locks
+
+# REBOOT IF NECESSARY
+LASTREBOOTDATE=`last reboot | head -1 | awk '{ print $5  " "  $6  " "  $7 }'`
+DATEFORMAT="%a %b %_d"
+LASTBOOTDATE=`date -d "$LASTREBOOTDATE" +"${DATEFORMAT}"`
+TODAYDATE=`date +"${DATEFORMAT}"`
+PKG_UPDATES_REQ_REBOOT=`rpm -qa --last | grep -B1000 "$LASTBOOTDATE" | grep -v "$LASTBOOTDATE" | egrep -i "$PKGS_REQ_REBOOT" |  wc -l`
+PKG_UPDATES=`rpm -qa --last | grep -B1000 "$LASTBOOTDATE" | grep -v "$LASTBOOTDATE" | wc -l`
+PKG_UPDATES_TODAY=`rpm -qa --last | grep -B1000 "$TODAYDATE" | wc -l`
+KERNEL_UPDATES_TODAY=`rpm -qa --last | grep -B1000 "$TODAYDATE" | egrep -i 'kernel-[0-9]' | wc -l`
+#echo "Last reboot: $LASTBOOTDATE"
+#echo "Today's date: $TODAYDATE"
+#echo "Package updates requiring reboot since last reboot: $PKG_UPDATES_REQ_REBOOT"
+#echo "Package updates since last reboot: $PKG_UPDATES"
+#echo "Package updates today: $PKG_UPDATES_TODAY"
+
+if  [[ $PKG_UPDATES_REQ_REBOOT -gt 0  ]] ||
+	[[ $((PKG_UPDATES)) -ge $((UPDATES_SINCE_REBOOT)) ]] ||
+	[[ $((PKG_UPDATES_TODAY)) -ge $((NUM_UPDATES_TODAY)) ]] ||
+	[[ $((KERNEL_UPDATES_TODAY)) -gt 1 ]] ||
+	[[ $((REBOOT)) -ge 1 ]] ; then
+	echo "REBOOTING SERVER..."
+	logger -s -t "puppet-debug" $SHUTDOWN_MESSAGE
+#	echo $SHUTDOWN_MESSAGE
+	wall -n "$SHUTDOWN_MESSAGE"
+	/sbin/shutdown -r now "$SHUTDOWN_MESSAGE"
+else
+	echo "SKIPPING SERVER REBOOT..."
+	NO_SHUTDOWN_MESSAGE="No updates require reboot of this server ($(hostname -f)). Cancelling reboot."
+	logger -s -t "puppet-debug" "$NO_SHUTDOWN_MESSAGE"
+#	echo $NO_SHUTDOWN_MESSAGE
+        /sbin/shutdown -c
+	wall -n "$NO_SHUTDOWN_MESSAGE"
+fi
+

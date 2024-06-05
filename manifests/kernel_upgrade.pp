@@ -216,12 +216,16 @@ ${reboot_option} ${updates_reboot_option} ${updates_today_option} ${reboot_pkgs_
     }
 
     file { 'kernel_upgrade.sh':
-      ensure => 'file',
-      path   => "${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh",
-      source => "puppet:///modules/${module_name}/root/cron_scripts/kernel_upgrade.sh",
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0700',
+      ensure       => 'file',
+      path         => "${profile_update_os::root_cron_scripts_dir}/kernel_upgrade.sh",
+      source       => [
+        "puppet:///modules/${module_name}/root/cron_scripts/kernel_upgrade.sh.${facts['os']['family']}",
+        "puppet:///modules/${module_name}/root/cron_scripts/kernel_upgrade.sh",
+      ],
+      sourceselect => 'first',
+      owner        => 'root',
+      group        => 'root',
+      mode         => '0700',
     }
   }
   else {

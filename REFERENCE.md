@@ -266,7 +266,7 @@ If not defined cron runs every week
 
 ### <a name="profile_update_os--yum_upgrade"></a>`profile_update_os::yum_upgrade`
 
-Apply yum updates via cron
+While the class name refers to 'yum', this class also supports 'zypper' in SUSE.
 
 #### Examples
 

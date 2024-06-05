@@ -1,0 +1,10 @@
+---
+profile_update_os::yum_upgrade::command: "zypper update -y"
+profile_update_os::yum_upgrade::config_file: ""
+profile_update_os::yum_upgrade::excluded_packages:
+  - "kernel-default"
+  - "kernel-default-extra"
+  - "kernel-default-optional"
+profile_update_os::yum_upgrade::package: "zypper"
+profile_update_os::yum_upgrade::service: ""
+profile_update_os::yum_upgrade::yum_config_file: "/etc/zypp/zypp.conf"

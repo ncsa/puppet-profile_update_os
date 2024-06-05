@@ -47,7 +47,7 @@ See: [REFERENCE.md](REFERENCE.md)
 
 ## Limitations
 
-n/a
+This module supports both RedHat & Suse OS families.
 
 ## Development
 
