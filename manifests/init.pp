@@ -20,9 +20,9 @@ class profile_update_os (
     default  : {} # do nothing
   }
 
-  file { $root_cron_scripts_dir:
-    ensure => 'directory',
-  }
+  ensure_resource('file', $root_cron_scripts_dir, {
+      ensure => 'directory',
+  })
   file { 'run-if-today.sh':
     ensure => 'file',
     path   => "${root_cron_scripts_dir}/run-if-today.sh",
